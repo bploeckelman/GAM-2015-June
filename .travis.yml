@@ -1,0 +1,17 @@
+language: java
+jdk: oraclejdk7
+notifications:
+  email: false
+install:
+- "./travis/install-prerequisites.sh"
+script:
+- "./travis/build.sh"
+#after_success:
+#- "./travis/deploy.sh"
+cache:
+  directories:
+  - $HOME/.gradle
+  - travis/android-sdk-linux
+env:
+  global:
+  - secure: Gs6zMMbCzq+7HP/W7OpY/rXNKYwcuWkrBsBLMEGCzrjvff65AcbhjeIjlHciI3UZIAL6e9hemY85b2SxwmzmlC8SkkaTdE6yoOrIY8hPWkOuEYubPA4H45uengnakLLH1nT8B7+7TEB2bIKEPFozoVlVLOCf7b1mnCm3t1t94iM=
