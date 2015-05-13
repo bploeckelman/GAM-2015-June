@@ -16,7 +16,7 @@ public class TileSetOverhead extends TileSet {
         atlas = new TextureAtlas("spritesheets/kenney-overhead-tiles.atlas");
 
         final Texture atlasTex = atlas.getTextures().first();
-        textures.put(TileType.BLANK,                 new TextureRegion(atlasTex, atlasTex.getWidth() - 32, atlasTex.getHeight() - 32));
+        textures.put(TileType.BLANK,                 new TextureRegion(atlasTex, atlasTex.getWidth() - 32, atlasTex.getHeight() - 32, 32, 32));
         textures.put(TileType.GROUND_CLAY,           atlas.findRegion("ground-clay"));
         textures.put(TileType.GROUND_CONCRETE,       atlas.findRegion("ground-concrete"));
         textures.put(TileType.GROUND_GRASS,          atlas.findRegion("ground-grass"));
@@ -36,10 +36,10 @@ public class TileSetOverhead extends TileSet {
         textures.put(TileType.ROAD_LINE_THICK_E,     atlas.findRegion("road-line-thick-e"));
         textures.put(TileType.ROAD_LINE_THICK_S,     atlas.findRegion("road-line-thick-s"));
         textures.put(TileType.ROAD_LINE_THICK_W,     atlas.findRegion("road-line-thick-w"));
-        textures.put(TileType.ROAD_LINE_THIN_END_N,  atlas.findRegion("road-line-thin-end_n"));
-        textures.put(TileType.ROAD_LINE_THIN_END_E,  atlas.findRegion("road-line-thin-end_e"));
-        textures.put(TileType.ROAD_LINE_THIN_END_S,  atlas.findRegion("road-line-thin-end_s"));
-        textures.put(TileType.ROAD_LINE_THIN_END_W,  atlas.findRegion("road-line-thin-end_w"));
+        textures.put(TileType.ROAD_LINE_THIN_END_N,  atlas.findRegion("road-line-thin-end-n"));
+        textures.put(TileType.ROAD_LINE_THIN_END_E,  atlas.findRegion("road-line-thin-end-e"));
+        textures.put(TileType.ROAD_LINE_THIN_END_S,  atlas.findRegion("road-line-thin-end-s"));
+        textures.put(TileType.ROAD_LINE_THIN_END_W,  atlas.findRegion("road-line-thin-end-w"));
         textures.put(TileType.ROAD_LINE_THIN_H,      atlas.findRegion("road-line-thin-h"));
         textures.put(TileType.ROAD_LINE_THIN_V,      atlas.findRegion("road-line-thin-v"));
         textures.put(TileType.ROAD_TEE_THICK_N,      atlas.findRegion("road-tee-thick-n"));
