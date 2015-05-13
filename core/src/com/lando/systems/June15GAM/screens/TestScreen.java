@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.MathUtils;
 import com.lando.systems.June15GAM.June15GAM;
 
 /**
@@ -20,6 +22,7 @@ public class TestScreen extends ScreenAdapter {
     FrameBuffer        sceneFrameBuffer;
     SpriteBatch        batch;
     Texture            img;
+    TextureAtlas       atlas;
     TextureRegion      sceneRegion;
     OrthographicCamera camera;
 
@@ -27,6 +30,7 @@ public class TestScreen extends ScreenAdapter {
         sceneFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, June15GAM.win_width, June15GAM.win_height, false);
         batch = new SpriteBatch();
         img = new Texture("badlogic.jpg");
+        atlas = new TextureAtlas("spritesheets/kenney-overhead-tiles.atlas");
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
         sceneRegion.flip(false, true);
         camera = new OrthographicCamera();
@@ -43,7 +47,12 @@ public class TestScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(img, 0, 0);
+        for (int i = 0; i < 70; ++i) {
+            final TextureRegion region = atlas.getRegions().get(i);
+            batch.draw(region,
+                       region.getRegionWidth() * (i % 10),
+                       region.getRegionHeight() * MathUtils.floor(i / 10) + region.getRegionHeight() / 4f);
+        }
         batch.end();
         sceneFrameBuffer.end();
 
@@ -72,6 +81,14 @@ public class TestScreen extends ScreenAdapter {
     @Override
     public void resume() {
         // TODO: enable input
+    }
+
+    @Override
+    public void dispose() {
+        atlas.dispose();
+        img.dispose();
+        batch.dispose();
+        sceneFrameBuffer.dispose();
     }
 
 }
