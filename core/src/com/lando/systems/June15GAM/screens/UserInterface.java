@@ -59,6 +59,14 @@ public class UserInterface implements InputProcessor {
         }
     }
 
+    public TextureRegion getSelectedTileTextureRegion() {
+        return tileSet.textures.get(tileTextures[selected]);
+    }
+
+    public TileTexture getSelectedTileTexture() {
+        return tileTextures[selected];
+    }
+
     // ------------------------------------------------------------------------
     // InputProcessor interface
     // ------------------------------------------------------------------------
@@ -109,14 +117,6 @@ public class UserInterface implements InputProcessor {
         selected = MathUtils.clamp(selected, 0, tileTextures.length - 1);
 
         return true;
-    }
-
-    public TextureRegion getSelectedTileTexture() {
-        return tileSet.textures.get(tileTextures[selected]);
-    }
-
-    public TileTexture getSelectedTileType() {
-        return tileTextures[selected];
     }
 
 }

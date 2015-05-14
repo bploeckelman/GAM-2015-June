@@ -71,7 +71,7 @@ public class TestScreen extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         tileMap.render(batch);
-        final TextureRegion selectTex = userInterface.getSelectedTileTexture();
+        final TextureRegion selectTex = userInterface.getSelectedTileTextureRegion();
         batch.draw(selectTex, MathUtils.floor(mouseWorldPos.x / 64) * 64, MathUtils.floor(mouseWorldPos.y / 64) * 64);
         batch.end();
         sceneFrameBuffer.end();
@@ -93,7 +93,7 @@ public class TestScreen extends ScreenAdapter {
             int y = MathUtils.floor(mouseWorldPos.y / 64);
             if (x >= 0 && x < tileMap.tiles[0].length
              && y >= 0 && y < tileMap.tiles.length) {
-                tileMap.tiles[y][x] = userInterface.getSelectedTileType();
+                tileMap.tiles[y][x].texture = userInterface.getSelectedTileTexture();
             }
         }
         camera.update();
