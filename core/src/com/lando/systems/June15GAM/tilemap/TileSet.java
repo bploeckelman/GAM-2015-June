@@ -10,10 +10,10 @@ import java.util.Map;
  */
 public abstract class TileSet {
 
-    public Map<TileType, TextureRegion> textures;
+    public Map<TileTexture, TextureRegion> textures;
 
     public TileSet() {
-        textures = new HashMap<TileType, TextureRegion>();
+        textures = new HashMap<TileTexture, TextureRegion>();
     }
 
 }
