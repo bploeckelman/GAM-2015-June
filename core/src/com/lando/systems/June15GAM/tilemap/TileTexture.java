@@ -5,6 +5,7 @@ package com.lando.systems.June15GAM.tilemap;
  */
 public enum TileTexture {
 
+    SELECTION,
     BLANK,
     GROUND_CLAY,
     GROUND_CONCRETE,

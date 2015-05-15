@@ -20,8 +20,9 @@ public class UserInterface implements InputProcessor {
 
     public UserInterface() {
         int i = 0;
-        tileTextures = new TileTexture[TileTexture.values().length];
+        tileTextures = new TileTexture[TileTexture.values().length - 1];
         for (TileTexture type : TileTexture.values()) {
+            if (type == TileTexture.SELECTION) continue;
             tileTextures[i++] = type;
         }
         selected = 0;
@@ -50,13 +51,17 @@ public class UserInterface implements InputProcessor {
                    offset / 2f + tile_size + margin / 2f);
 
         // Draw all the tile textures in the selection tray
-        batch.setColor(1, 1, 1, 1);
+        final TextureRegion selection = tileSet.textures.get(TileTexture.SELECTION);
         final int iStart = MathUtils.clamp(selected - num_tiles_on_screen / 2 - 1, 0, tileTextures.length - 1);
         for (int i = iStart; i < tileTextures.length && i < selected + num_tiles_on_screen / 2 + 1; ++i) {
             final int yIndex = MathUtils.clamp(i - selected + num_tiles_on_screen / 2, 0, tileTextures.length - 1);
             final TextureRegion tile = tileSet.textures.get(tileTextures[i]);
+            batch.setColor(1, 1, 1, 1);
             batch.draw(tile, margin, yIndex * (tile_size + margin) + offset, tile_size, tile_size);
+            batch.setColor(0.75f, 0.75f, 0, 0.9f);
+            batch.draw(selection, margin - 2, yIndex * (tile_size + margin) + offset - 2, tile_size + 4, tile_size + 4);
         }
+        batch.setColor(1, 1, 1, 1);
     }
 
     public TextureRegion getSelectedTileTextureRegion() {
