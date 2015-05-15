@@ -65,6 +65,10 @@ public class OrthoCamController extends InputAdapter {
 
     @Override
     public boolean scrolled (int amount) {
+        if (!Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+            return false;
+        }
+
         float scale = zoom_scale;
         if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
             scale *= 10;

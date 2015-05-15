@@ -113,14 +113,14 @@ public class UserInterface implements InputProcessor {
 
     @Override
     public boolean scrolled(int amount) {
-        // Change the currently selected tile texture with ctrl+scroll
-        if (!Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
             return false;
         }
-        if      (amount > 0) ++selected;
-        else if (amount < 0) --selected;
-        selected = MathUtils.clamp(selected, 0, tileTextures.length - 1);
 
+        // Change the currently selected tile texture with scroll
+        if      (amount < 0) ++selected;
+        else if (amount > 0) --selected;
+        selected = MathUtils.clamp(selected, 0, tileTextures.length - 1);
         return true;
     }
 
