@@ -18,7 +18,7 @@ public class TileMap {
 
     public TileSet  tileSet;
     public Tile[][] tiles;
-
+    public boolean gameLost;
 
     private HashMap<Integer, Building> buildings;
     private int castleRadius = 3;
@@ -29,6 +29,7 @@ public class TileMap {
 
 
     public TileMap(int xTiles, int yTiles) {
+        gameLost = false;
         buildings = new HashMap<Integer, Building>();
         width = xTiles;
         height = yTiles;
@@ -126,45 +127,48 @@ public class TileMap {
     }
 
     private void findInternals(){
-        resetGround();
-        if (setInternal(homeKeep.x, homeKeep.y)){
-            resetGround();
-        }
+        resetGround(TileType.INTERIOR);
+        setInternal(0, 0);
+        if (tiles[homeKeep.y][homeKeep.x].type != TileType.INTERIOR) gameLost = true;
     }
 
-    private void resetGround(){
+    private void resetGround(TileType type){
         for (int y = 0; y < tiles.length; ++y) {
             for (int x = 0; x < tiles[y].length; ++x) {
-                if (tiles[y][x].type == TileType.INTERIOR) tiles[y][x].type = TileType.GROUND;
+                if (tiles[y][x].type == TileType.INTERIOR || tiles[y][x].type == TileType.GROUND) tiles[y][x].type = type;
             }
         }
     }
 
     /**
-     * Walk the map and set internals
+     * Walk the map and set tiles that are not surrounded to ground
      * @param x x position
      * @param y y position
-     * @return true if the keep isn't contained
+     * return
      */
-    public boolean setInternal(int x, int y){
-        if (x < 0 || x >= width) return true; // outside bounds
-        if (y < 0 || y >= height) return true; // outside bounds
+    public void setInternal(int x, int y){
+        if (x < 0 || x >= width) return; // outside bounds
+        if (y < 0 || y >= height) return; // outside bounds
         Tile currentTile = tiles[y][x];
-        if (currentTile.type == TileType.WATER) return true;
+        if (currentTile.type == TileType.WATER) return; // TODO this may be bad, may need to check water somehow later
 
-        // If it is already set, no need to check
-        if (currentTile.type == TileType.INTERIOR) return false;
-        currentTile.type = TileType.INTERIOR;
+        if (currentTile.type == TileType.GROUND) return;
+
         Building building = buildings.get(x + y * width);
 
-        if (building != null && building instanceof Wall) return false;
+        if (building != null && building instanceof Wall) return;
 
-        if (setInternal(x - 1, y)) return true;
-        if (setInternal(x + 1, y)) return true;
-        if (setInternal(x, y - 1)) return true;
-        if (setInternal(x, y + 1)) return true;
+        currentTile.type = TileType.GROUND;
+        setInternal(x - 1, y - 1);
+        setInternal(x - 1, y);
+        setInternal(x - 1, y + 1);
+        setInternal(x, y - 1);
+        setInternal(x, y + 1);
+        setInternal(x + 1, y - 1);
+        setInternal(x + 1, y);
+        setInternal(x + 1, y + 1);
 
-        return false;
+
     }
 
     private void makeStarterCastle(int x, int y){
@@ -178,10 +182,18 @@ public class TileMap {
             setWall(x + i, y - castleRadius);
         }
 
-        setTower(x - (castleRadius -1), y - (castleRadius -1));
-        setTower(x + (castleRadius -1), y - (castleRadius -1));
-        setTower(x - (castleRadius -1), y + (castleRadius -1));
-        setTower(x + (castleRadius -1), y + (castleRadius -1));
+        // TODO this is debug
+        for (int i = 0; i < 3; i++){
+            for (int j = 0; j < 3; j++){
+                setWall(x + castleRadius + i, y + j);
+            }
+        }
+
+
+        setTower(x - 1, y - 1);
+        setTower(x + 1, y - 1);
+        setTower(x - 1, y + 1);
+        setTower(x + 1, y + 1);
     }
 
 

@@ -29,7 +29,7 @@ public class Wall extends Building {
                 texture = TileTexture.ROAD_CORNER_CURVE_NE;
                 break;
             case 4: // S
-                texture = TileTexture.ROAD_LINE_THIN_END_S;
+                texture = TileTexture.ROAD_LINE_THIN_END_N;
                 break;
             case 5: // N S
                 texture = TileTexture.ROAD_LINE_THIN_V;
