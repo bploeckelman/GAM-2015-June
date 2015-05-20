@@ -62,7 +62,7 @@ public class TileMap {
                 if (tiles[y][x].type == TileType.INTERIOR){
                     batch.setColor(Color.LIGHT_GRAY);
                 }
-                batch.draw(tile, x * tile.getRegionWidth(), y * tile.getRegionHeight());
+                batch.draw(tile, x * tileSet.tileSize, y * tileSet.tileSize);
                 batch.setColor(Color.WHITE);
             }
         }

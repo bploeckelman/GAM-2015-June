@@ -14,6 +14,7 @@ public class TileSetOverhead extends TileSet {
     public TileSetOverhead() {
         super();
         atlas = new TextureAtlas("spritesheets/kenney-overhead-tiles.atlas");
+        tileSize = 64;
 
         final Texture atlasTex = atlas.getTextures().first();
         textures.put(TileTexture.SELECTION,             new TextureRegion(atlasTex, atlasTex.getWidth() - 32, 0, 32, 32));

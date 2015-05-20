@@ -11,6 +11,7 @@ import java.util.Map;
 public abstract class TileSet {
 
     public Map<TileTexture, TextureRegion> textures;
+    public float tileSize;
 
     public TileSet() {
         textures = new HashMap<TileTexture, TextureRegion>();
