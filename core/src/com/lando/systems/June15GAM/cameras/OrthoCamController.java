@@ -20,7 +20,7 @@ public class OrthoCamController extends InputAdapter {
     final Vector3 delta                = new Vector3();
     final float   zoom_scale           = 0.025f;
     final float   min_camera_zoom      = 0.1f;
-    final float   initial_camera_zoom  = 1;
+    final float   initial_camera_zoom  = 4f;
     final boolean pan_right_mouse_only = true;
 
     public MutableFloat camera_zoom = new MutableFloat(initial_camera_zoom);
