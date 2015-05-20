@@ -49,6 +49,7 @@ public class TileMap {
 
         makeStarterCastle(15, 15);
         findInternals();
+        reconcileWalls();
     }
 
 
@@ -109,6 +110,19 @@ public class TileMap {
 
     public void destroyBuildingAt(int x, int y){
         buildings.put(x + y * width, null);
+    }
+
+    public void reconcileWalls(){
+        for (Building building : buildings.values()){
+            if (building instanceof Wall){
+                int neighbors = 0;
+                if (getBuildingAt(building.x, building.y + 1) instanceof  Wall) neighbors += 1;
+                if (getBuildingAt(building.x + 1, building.y) instanceof  Wall) neighbors += 2;
+                if (getBuildingAt(building.x, building.y - 1) instanceof  Wall) neighbors += 4;
+                if (getBuildingAt(building.x -1, building.y) instanceof  Wall) neighbors += 8;
+                ((Wall) building).setTexture(neighbors);
+            }
+        }
     }
 
     private void findInternals(){
