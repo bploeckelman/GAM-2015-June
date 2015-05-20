@@ -2,7 +2,7 @@
 kenney-overhead-tiles.png
 size: 1024,512
 format: RGBA8888
-filter: MipMapNearestNearest,MipMapNearestNearest
+filter: Nearest,Nearest
 repeat: none
 ground-clay
   rotate: false
