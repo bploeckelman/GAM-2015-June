@@ -14,7 +14,7 @@ import java.util.HashMap;
 /**
  * Brian Ploeckelman created on 5/12/2015.
  */
-public class TileMap {
+public class TileMap implements Runnable{
 
     public TileSet  tileSet;
     public Tile[][] tiles;
@@ -128,8 +128,25 @@ public class TileMap {
 
     private void findInternals(){
         resetGround(TileType.INTERIOR);
-        setInternal(0, 0);
+
+        // Android has a tiny stack on the main thread.  This fixes it =)
+        Thread thread = new Thread(new ThreadGroup("Worker"), this, "LargerStack", 1000000);
+        thread.start();
+        try {
+            while(thread.isAlive())
+            {
+                Thread.sleep(10);
+            }
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         if (tiles[homeKeep.y][homeKeep.x].type != TileType.INTERIOR) gameLost = true;
+    }
+
+    public void run(){
+        setInternal(0, 0);
     }
 
     private void resetGround(TileType type){

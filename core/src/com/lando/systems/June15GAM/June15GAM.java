@@ -41,8 +41,8 @@ public class June15GAM extends Game {
      * Game Constants
      * ------------------------------------------------------------------------ */
 
-    public static final int win_width = 720;
-    public static final int win_height = 1080;
+    public static int win_width = 720;
+    public static int win_height = 1080;
     public static final float win_aspect = (float) win_width / (float) win_height;
     public static final boolean win_resizeable = false;
     public static final String win_title = "GAM - June 2015";
