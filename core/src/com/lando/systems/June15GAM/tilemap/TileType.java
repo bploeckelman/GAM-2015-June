@@ -8,6 +8,7 @@ public enum TileType {
     GROUND,
     WATER,
     WALL,
+    KEEP,
     INTERIOR,
     EMPTY
 
