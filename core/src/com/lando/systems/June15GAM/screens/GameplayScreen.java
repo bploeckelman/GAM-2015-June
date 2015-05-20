@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -12,7 +13,9 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.cameras.OrthoCamController;
+import com.lando.systems.June15GAM.enemies.Ship;
 import com.lando.systems.June15GAM.tilemap.TileMap;
+import com.lando.systems.June15GAM.tilemap.TileTexture;
 
 /**
  * Created by Doug on 5/19/2015.
@@ -41,6 +44,8 @@ public class GameplayScreen extends ScreenAdapter {
     int      turn;
 
     TileMap tileMap;
+    Ship    ship;
+    Texture shipTexture; // TODO: move to an assets class
 
     public GameplayScreen() {
         mouseScreenPos = new Vector3();
@@ -65,6 +70,17 @@ public class GameplayScreen extends ScreenAdapter {
 
         tileMap = new TileMap(50, 50);
 
+        // TODO: move to assets class
+        shipTexture = new Texture("fantasy-sprites.png");
+        TextureRegion[][] regions = TextureRegion.split(shipTexture, 16, 16);
+
+        // TODO: generate ships randomly from water edges?
+        ship = new Ship(2000, 2000);
+        ship.animation = new Animation(Ship.FRAME_DURATION,
+                                       regions[1][2],
+                                       regions[1][3]);
+        ship.animation.setPlayMode(Animation.PlayMode.LOOP);
+
         final InputMultiplexer mux = new InputMultiplexer();
 
         mux.addProcessor(camController);
@@ -82,7 +98,9 @@ public class GameplayScreen extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         tileMap.render(batch);
-
+        if (phase == Gameplay.ATTACK) {
+            ship.render(batch);
+        }
         batch.end();
         sceneFrameBuffer.end();
 
@@ -121,6 +139,8 @@ public class GameplayScreen extends ScreenAdapter {
             phase = Gameplay.BUILD;
             ++turn;
         }
+
+        ship.update(delta);
     }
 
     @Override
@@ -146,6 +166,7 @@ public class GameplayScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
+        shipTexture.dispose();
         font.dispose();
         batch.dispose();
         sceneFrameBuffer.dispose();
