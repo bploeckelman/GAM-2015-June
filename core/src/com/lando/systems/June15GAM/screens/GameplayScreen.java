@@ -100,22 +100,22 @@ public class GameplayScreen extends ScreenAdapter {
         }
 
         switch (phase) {
-            case BUILD:  updateBuild();  break;
-            case ATTACK: updateAttack(); break;
+            case BUILD:  updateBuild(delta);  break;
+            case ATTACK: updateAttack(delta); break;
         }
 
         camera.update();
         updateMouseVectors(camera);
     }
 
-    private void updateBuild() {
+    private void updateBuild(float delta) {
         // TODO: switch to attack phase based on some condition (timer? done placing wall sections?)
         if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
             phase = Gameplay.ATTACK;
         }
     }
 
-    private void updateAttack() {
+    private void updateAttack(float delta) {
         // TODO: switch to build phase based on some condition (timer? out of ammunition?)
         if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
             phase = Gameplay.BUILD;
