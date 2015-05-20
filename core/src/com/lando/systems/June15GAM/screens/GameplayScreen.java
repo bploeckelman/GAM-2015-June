@@ -4,14 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.cameras.OrthoCamController;
@@ -31,10 +28,21 @@ public class GameplayScreen extends ScreenAdapter {
     OrthographicCamera screenCamera;
     OrthoCamController camController;
     //UserInterface      userInterface;
+    BitmapFont         font;
+
+    public enum Gameplay {
+        BUILD,
+        ATTACK
+        // ???
+        // PROFIT
+    }
+
+    Gameplay phase;
+    int      turn;
 
     TileMap tileMap;
 
-    public GameplayScreen(){
+    public GameplayScreen() {
         mouseScreenPos = new Vector3();
         mouseWorldPos = new Vector3();
         sceneFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, June15GAM.win_width, June15GAM.win_height, false);
@@ -48,6 +56,12 @@ public class GameplayScreen extends ScreenAdapter {
         screenCamera.setToOrtho(false, June15GAM.win_width, June15GAM.win_height);
         screenCamera.update();
         camController = new OrthoCamController(camera);
+        font = new BitmapFont();
+        font.setColor(Color.WHITE);
+        font.getData().setScale(2f);
+
+        phase = Gameplay.BUILD;
+        turn = 0;
 
         tileMap = new TileMap(50, 50);
 
@@ -76,7 +90,7 @@ public class GameplayScreen extends ScreenAdapter {
         batch.setProjectionMatrix(screenCamera.combined);
         batch.begin();
         batch.draw(sceneRegion, 0, 0);
-
+        font.draw(batch, "Turn #" + turn + ": " + phase.name(), 10, screenCamera.viewportHeight - 10);
         batch.end();
     }
 
@@ -85,8 +99,28 @@ public class GameplayScreen extends ScreenAdapter {
             Gdx.app.exit();
         }
 
+        switch (phase) {
+            case BUILD:  updateBuild();  break;
+            case ATTACK: updateAttack(); break;
+        }
+
         camera.update();
         updateMouseVectors(camera);
+    }
+
+    private void updateBuild() {
+        // TODO: switch to attack phase based on some condition (timer? done placing wall sections?)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+            phase = Gameplay.ATTACK;
+        }
+    }
+
+    private void updateAttack() {
+        // TODO: switch to build phase based on some condition (timer? out of ammunition?)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
+            phase = Gameplay.BUILD;
+            ++turn;
+        }
     }
 
     @Override
@@ -112,6 +146,7 @@ public class GameplayScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
+        font.dispose();
         batch.dispose();
         sceneFrameBuffer.dispose();
     }
