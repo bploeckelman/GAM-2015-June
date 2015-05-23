@@ -19,6 +19,8 @@ public class June15GAM extends Game {
 
     @Override
     public void create() {
+        Assets.load();
+
         tween = new TweenManager();
         Tween.registerAccessor(Color.class, new ColorAccessor());
         Tween.registerAccessor(Rectangle.class, new RectangleAccessor());
@@ -26,7 +28,7 @@ public class June15GAM extends Game {
         Tween.registerAccessor(Vector3.class, new Vector3Accessor());
 
         // TODO make this main menu later
-        setScreen(new GameplayScreen());
+        setScreen(new GameplayScreen(this));
     }
 
     @Override
@@ -35,6 +37,11 @@ public class June15GAM extends Game {
         tween.update(dt);
 
         super.render();
+    }
+
+    public void exit() {
+        Assets.dispose();
+        Gdx.app.exit();
     }
 
     /** -----------------------------------------------------------------------

@@ -22,6 +22,7 @@ import com.lando.systems.June15GAM.tilemap.TileTexture;
  */
 public class GameplayScreen extends ScreenAdapter {
 
+    final June15GAM    game;
     Vector3            mouseScreenPos;
     Vector3            mouseWorldPos;
     FrameBuffer        sceneFrameBuffer;
@@ -47,7 +48,9 @@ public class GameplayScreen extends ScreenAdapter {
     Ship    ship;
     Texture shipTexture; // TODO: move to an assets class
 
-    public GameplayScreen() {
+    public GameplayScreen(June15GAM game) {
+        this.game = game;
+
         mouseScreenPos = new Vector3();
         mouseWorldPos = new Vector3();
         sceneFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, June15GAM.win_width, June15GAM.win_height, false);
@@ -70,19 +73,10 @@ public class GameplayScreen extends ScreenAdapter {
 
         tileMap = new TileMap(50, 50);
 
-        // TODO: move to assets class
-        shipTexture = new Texture("fantasy-sprites.png");
-        TextureRegion[][] regions = TextureRegion.split(shipTexture, 16, 16);
-
         // TODO: generate ships randomly from water edges?
         ship = new Ship(2000, 2000);
-        ship.animation = new Animation(Ship.FRAME_DURATION,
-                                       regions[1][2],
-                                       regions[1][3]);
-        ship.animation.setPlayMode(Animation.PlayMode.LOOP);
 
         final InputMultiplexer mux = new InputMultiplexer();
-
         mux.addProcessor(camController);
         Gdx.input.setInputProcessor(mux);
 
@@ -114,7 +108,7 @@ public class GameplayScreen extends ScreenAdapter {
 
     public void update(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            Gdx.app.exit();
+            game.exit();
         }
 
         switch (phase) {
