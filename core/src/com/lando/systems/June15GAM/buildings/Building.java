@@ -15,4 +15,7 @@ public class Building {
         this.x = x;
         this.y = y;
     }
+
+    public void update(float delta) {}
+
 }

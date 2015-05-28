@@ -10,12 +10,18 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.utils.Pools;
 import com.lando.systems.June15GAM.June15GAM;
+import com.lando.systems.June15GAM.buildings.Tower;
 import com.lando.systems.June15GAM.cameras.OrthoCamController;
 import com.lando.systems.June15GAM.enemies.Ship;
 import com.lando.systems.June15GAM.tilemap.TileMap;
 import com.lando.systems.June15GAM.tilemap.TileTexture;
+import com.lando.systems.June15GAM.weapons.Cannonball;
 
 /**
  * Created by Doug on 5/19/2015.
@@ -46,7 +52,9 @@ public class GameplayScreen extends ScreenAdapter {
 
     TileMap tileMap;
     Ship    ship;
-    Texture shipTexture; // TODO: move to an assets class
+
+    Array<Cannonball> activeCannonballs;
+    Pool<Cannonball>  cannonballPool;
 
     public GameplayScreen(June15GAM game) {
         this.game = game;
@@ -76,6 +84,9 @@ public class GameplayScreen extends ScreenAdapter {
         // TODO: generate ships randomly from water edges?
         ship = new Ship(2000, 2000);
 
+        activeCannonballs = new Array<Cannonball>(20);
+        cannonballPool = Pools.get(Cannonball.class);
+
         final InputMultiplexer mux = new InputMultiplexer();
         mux.addProcessor(camController);
         Gdx.input.setInputProcessor(mux);
@@ -94,6 +105,9 @@ public class GameplayScreen extends ScreenAdapter {
         tileMap.render(batch);
         if (phase == Gameplay.ATTACK) {
             ship.render(batch);
+            for (Cannonball cannonball : activeCannonballs) {
+                cannonball.render(batch);
+            }
         }
         batch.end();
         sceneFrameBuffer.end();
@@ -135,6 +149,35 @@ public class GameplayScreen extends ScreenAdapter {
         }
 
         ship.update(delta);
+
+        for (Tower tower : tileMap.getTowers()) {
+            tower.update(delta);
+        }
+
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            final float tile_size = tileMap.tileSet.tileSize;
+            final Vector2 towerPos = new Vector2();
+            for (Tower tower : tileMap.getTowers()) {
+                if (tower.canFire()) {
+                    tower.fire();
+                    towerPos.set(tower.x * tile_size + tile_size * 0.5f, tower.y * tile_size + tile_size * 0.5f);
+                    Cannonball cannonball = cannonballPool.obtain();
+                    cannonball.init(towerPos.x, towerPos.y, mouseWorldPos.x, mouseWorldPos.y);
+                    activeCannonballs.add(cannonball);
+                }
+            }
+        }
+
+        for (int i = activeCannonballs.size - 1; i >= 0; --i) {
+            Cannonball cannonball = activeCannonballs.get(i);
+            if (cannonball.position.epsilonEquals(cannonball.target, tileMap.tileSet.tileSize / 2f)) {
+                cannonballPool.free(cannonball);
+                activeCannonballs.removeIndex(i);
+                // TODO: kaboom
+            } else {
+                cannonball.update(delta);
+            }
+        }
     }
 
     @Override
@@ -160,7 +203,6 @@ public class GameplayScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
-        shipTexture.dispose();
         font.dispose();
         batch.dispose();
         sceneFrameBuffer.dispose();
