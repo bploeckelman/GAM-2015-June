@@ -117,6 +117,15 @@ public class GameplayScreen extends ScreenAdapter {
         batch.begin();
         batch.draw(sceneRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // TODO Something is messed up with how android is drawing this
         font.draw(batch, "Turn #" + turn + ": " + phase.name(), 10, screenCamera.viewportHeight - 10);
+        float x = 10f;
+        int i = 1;
+        for (Tower tower : tileMap.getTowers()) {
+            if (tower.canFire()) {
+                font.draw(batch, "" + i, x, 32);
+            }
+            x += 32f;
+            ++i;
+        }
         batch.end();
     }
 
