@@ -26,6 +26,7 @@ public class Tower extends Building {
         if (shotTimer < 0f) {
             shotTimer = 0f;
         }
+        texture = canFire() ? TileTexture.GROUND_ROAD : TileTexture.GROUND_CONCRETE;
     }
 
     public boolean canFire() {
