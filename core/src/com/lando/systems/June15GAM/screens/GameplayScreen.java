@@ -1,11 +1,7 @@
 package com.lando.systems.June15GAM.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -20,13 +16,12 @@ import com.lando.systems.June15GAM.buildings.Tower;
 import com.lando.systems.June15GAM.cameras.OrthoCamController;
 import com.lando.systems.June15GAM.enemies.Ship;
 import com.lando.systems.June15GAM.tilemap.TileMap;
-import com.lando.systems.June15GAM.tilemap.TileTexture;
 import com.lando.systems.June15GAM.weapons.Cannonball;
 
 /**
  * Created by Doug on 5/19/2015.
  */
-public class GameplayScreen extends ScreenAdapter {
+public class GameplayScreen extends ScreenAdapter implements InputProcessor {
 
     final June15GAM    game;
     Vector3            mouseScreenPos;
@@ -89,6 +84,7 @@ public class GameplayScreen extends ScreenAdapter {
 
         final InputMultiplexer mux = new InputMultiplexer();
         mux.addProcessor(camController);
+        mux.addProcessor(this);
         Gdx.input.setInputProcessor(mux);
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -163,20 +159,6 @@ public class GameplayScreen extends ScreenAdapter {
             tower.update(delta);
         }
 
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            final float tile_size = tileMap.tileSet.tileSize;
-            final Vector2 towerPos = new Vector2();
-            for (Tower tower : tileMap.getTowers()) {
-                if (tower.canFire()) {
-                    tower.fire();
-                    towerPos.set(tower.x * tile_size + tile_size * 0.5f, tower.y * tile_size + tile_size * 0.5f);
-                    Cannonball cannonball = cannonballPool.obtain();
-                    cannonball.init(towerPos.x, towerPos.y, mouseWorldPos.x, mouseWorldPos.y);
-                    activeCannonballs.add(cannonball);
-                }
-            }
-        }
-
         for (int i = activeCannonballs.size - 1; i >= 0; --i) {
             Cannonball cannonball = activeCannonballs.get(i);
             if (cannonball.position.epsilonEquals(cannonball.target, tileMap.tileSet.tileSize / 2f)) {
@@ -207,6 +189,7 @@ public class GameplayScreen extends ScreenAdapter {
         final InputMultiplexer mux = new InputMultiplexer();
 
         mux.addProcessor(camController);
+        mux.addProcessor(this);
         Gdx.input.setInputProcessor(mux);
     }
 
@@ -224,4 +207,64 @@ public class GameplayScreen extends ScreenAdapter {
         mouseWorldPos.set(mx, my, 0);
         camera.unproject(mouseWorldPos);
     }
+
+    // ------------------------------------------------------------------------
+    // InputProcessor Interface
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (pointer == 0 && button == 0) {
+            final float tile_size = tileMap.tileSet.tileSize;
+            final Vector2 towerPos = new Vector2();
+            for (Tower tower : tileMap.getTowers()) {
+                if (tower.canFire()) {
+                    tower.fire();
+                    towerPos.set(tower.x * tile_size + tile_size * 0.5f, tower.y * tile_size + tile_size * 0.5f);
+                    Cannonball cannonball = cannonballPool.obtain();
+                    cannonball.init(towerPos.x, towerPos.y, mouseWorldPos.x, mouseWorldPos.y);
+                    activeCannonballs.add(cannonball);
+                    break;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
+    }
+
 }
