@@ -67,7 +67,7 @@ public class TileMap {
         }
         for (Building building : buildings.values()){
             final TextureRegion tile = tileSet.textures.get(building.texture);
-            batch.draw(tile, building.x * tile.getRegionWidth(), building.y * tile.getRegionHeight());
+            batch.draw(tile, building.x * tileSet.tileSize, building.y * tileSet.tileSize, tileSet.tileSize, tileSet.tileSize);
         }
     }
 

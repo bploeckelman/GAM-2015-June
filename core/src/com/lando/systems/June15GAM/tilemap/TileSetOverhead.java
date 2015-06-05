@@ -14,11 +14,11 @@ public class TileSetOverhead extends TileSet {
     public TileSetOverhead() {
         super();
         atlas = new TextureAtlas("spritesheets/kenney-overhead-tiles.atlas");
-        tileSize = 64;
+        tileSize = 16;
 
         final Texture atlasTex = atlas.getTextures().first();
-        textures.put(TileTexture.SELECTION,             new TextureRegion(atlasTex, atlasTex.getWidth() - 32, 0, 32, 32));
-        textures.put(TileTexture.BLANK,                 new TextureRegion(atlasTex, atlasTex.getWidth() - 32, atlasTex.getHeight() - 32, 32, 32));
+        textures.put(TileTexture.SELECTION,             new TextureRegion(atlasTex, atlasTex.getWidth() - tileSize / 2f, 0, tileSize / 2f, tileSize / 2f));
+        textures.put(TileTexture.BLANK,                 new TextureRegion(atlasTex, atlasTex.getWidth() - tileSize / 2f, atlasTex.getHeight() - tileSize / 2f, tileSize / 2f, tileSize / 2f));
         textures.put(TileTexture.GROUND_CLAY,           atlas.findRegion("ground-clay"));
         textures.put(TileTexture.GROUND_CONCRETE,       atlas.findRegion("ground-concrete"));
         textures.put(TileTexture.GROUND_GRASS,          atlas.findRegion("ground-grass"));

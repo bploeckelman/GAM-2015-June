@@ -7,8 +7,6 @@ import com.lando.systems.June15GAM.June15GAM;
 public class DesktopLauncher {
     public static void main (String[] arg) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        June15GAM.win_width /= 2;
-        June15GAM.win_height /= 2;
         config.width = June15GAM.win_width;
         config.height = June15GAM.win_height;
         config.resizable = June15GAM.win_resizeable;

@@ -1,6 +1,8 @@
 package com.lando.systems.June15GAM.screens;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,7 +16,6 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.buildings.Tower;
-import com.lando.systems.June15GAM.cameras.OrthoCamController;
 import com.lando.systems.June15GAM.enemies.Ship;
 import com.lando.systems.June15GAM.tilemap.TileMap;
 import com.lando.systems.June15GAM.weapons.Cannonball;
@@ -31,9 +32,6 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     SpriteBatch        batch;
     TextureRegion      sceneRegion;
     OrthographicCamera camera;
-    OrthographicCamera screenCamera;
-    OrthoCamController camController;
-    //UserInterface      userInterface;
     BitmapFont         font;
 
 
@@ -66,10 +64,6 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         camera = new OrthographicCamera();
         camera.setToOrtho(false, June15GAM.win_width, June15GAM.win_height);
         camera.update();
-        screenCamera = new OrthographicCamera();
-        screenCamera.setToOrtho(false, June15GAM.win_width, June15GAM.win_height);
-        screenCamera.update();
-        camController = new OrthoCamController(camera);
         font = new BitmapFont();
         font.setColor(Color.WHITE);
         font.getData().setScale(2f);
@@ -77,7 +71,10 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         phase = Gameplay.BUILD;
         turn = 0;
 
-        tileMap = new TileMap(50, 50);
+        // TODO: tilesize should come from tileset which is loaded in the tilemap, figure out a better way
+        final float TILE_SIZE = 16;
+        tileMap = new TileMap((int) (camera.viewportWidth  / TILE_SIZE),
+                              (int) (camera.viewportHeight / TILE_SIZE));
 
         // TODO: generate ships randomly from water edges?
         ship = new Ship(2000, 2000);
@@ -106,14 +103,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 cannonball.render(batch);
             }
         }
-        batch.end();
-        sceneFrameBuffer.end();
-
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        batch.setProjectionMatrix(screenCamera.combined);
-        batch.begin();
-        batch.draw(sceneRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // TODO Something is messed up with how android is drawing this
-        font.draw(batch, "Turn #" + turn + ": " + phase.name(), 10, screenCamera.viewportHeight - 10);
+        font.draw(batch, "Turn #" + turn + ": " + phase.name(), 10, camera.viewportHeight - 10);
         float x = 10f;
         int i = 1;
         for (Tower tower : tileMap.getTowers()) {
@@ -123,6 +113,13 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             x += 32f;
             ++i;
         }
+        batch.end();
+        sceneFrameBuffer.end();
+
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.draw(sceneRegion, 0, 0, camera.viewportWidth, camera.viewportHeight); // TODO Something is messed up with how android is drawing this
         batch.end();
     }
 
