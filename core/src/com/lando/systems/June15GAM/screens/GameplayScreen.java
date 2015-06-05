@@ -351,8 +351,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         }
         if (rotateButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
             tileMap.tetris.rotate(WallPiece.R.C);
+            return;
         }
-
+        tileMap.tetris.place(tileMap);
     }
 
     private void tapCannon(){
@@ -360,6 +361,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             tileMap.tetris.place(tileMap);
             return;
         }
+        tileMap.tetris.place(tileMap);
     }
 
     private void tapAttack(){
