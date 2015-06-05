@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -61,7 +62,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     int      turn;
 
     TileMap tileMap;
-    Ship    ship;
+    Array<Ship> ships;
 
     Array<Cannonball> activeCannonballs;
     Pool<Cannonball>  cannonballPool;
@@ -91,8 +92,16 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                               (int) (camera.viewportWidth  / tileSet.tileSize),
                               (int) (camera.viewportHeight / tileSet.tileSize));
 
-        // TODO: generate ships randomly from water edges?
-        ship = new Ship(2000, 2000);
+        // NOTE: for now, assume that the north edge of the screen is always a body of water, spawn from any tile along that edge
+        // TODO: generate spawn points on the tilemap and randomly pick from those when spawning
+        final int NUM_SHIPS = 10;
+        ships = new Array<Ship>();
+        for (int i = 0; i < NUM_SHIPS; ++i) {
+            int tx = MathUtils.random(1, tileMap.tiles[0].length - 2);
+            int ty = tileMap.tiles.length - 1;
+            Ship ship = new Ship(tx * tileSet.tileSize, ty * tileSet.tileSize, tileSet.tileSize, tileSet.tileSize);
+            ships.add(ship);
+        }
 
         activeCannonballs = new Array<Cannonball>(20);
         cannonballPool = Pools.get(Cannonball.class);
@@ -119,7 +128,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         tileMap.render(batch);
         effectsManager.render(batch);
         if (phase == Gameplay.ATTACK) {
-            ship.render(batch);
+            for (Ship ship : ships) {
+                ship.render(batch);
+            }
             for (Cannonball cannonball : activeCannonballs) {
                 cannonball.render(batch);
             }
@@ -192,7 +203,20 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             ++turn;
         }
 
-        ship.update(delta);
+        for (Ship ship : ships) {
+            ship.update(delta);
+            if (ship.reachedTarget()) {
+                // TODO: pick new water tile target (reachable from current location) move this stuff into ship? or move ships into tilemap?
+                final float tile_size = tileMap.tileSet.tileSize;
+                final float map_width = tileMap.tiles[0].length * tile_size;
+                final float map_height = tileMap.tiles.length * tile_size;
+                ship.moveTarget.set(
+                        MathUtils.random(tile_size, map_width - tile_size),
+                        MathUtils.random(map_height * 2f / 3f + tile_size, map_height - tile_size));
+                ship.velocity.set(ship.moveTarget.x - ship.position.x, ship.moveTarget.y - ship.position.y);
+                ship.velocity.nor().scl(Ship.SPEED);
+            }
+        }
 
         for (Tower tower : tileMap.getTowers()) {
             tower.update(delta);
