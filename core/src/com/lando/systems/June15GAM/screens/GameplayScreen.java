@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -21,7 +22,7 @@ import com.lando.systems.June15GAM.weapons.Cannonball;
 /**
  * Created by Doug on 5/19/2015.
  */
-public class GameplayScreen extends ScreenAdapter implements InputProcessor {
+public class GameplayScreen extends ScreenAdapter implements GestureDetector.GestureListener {
 
     final June15GAM    game;
     Vector3            mouseScreenPos;
@@ -34,6 +35,8 @@ public class GameplayScreen extends ScreenAdapter implements InputProcessor {
     OrthoCamController camController;
     //UserInterface      userInterface;
     BitmapFont         font;
+
+
 
     public enum Gameplay {
         BUILD,
@@ -82,10 +85,8 @@ public class GameplayScreen extends ScreenAdapter implements InputProcessor {
         activeCannonballs = new Array<Cannonball>(20);
         cannonballPool = Pools.get(Cannonball.class);
 
-        final InputMultiplexer mux = new InputMultiplexer();
-        mux.addProcessor(camController);
-        mux.addProcessor(this);
-        Gdx.input.setInputProcessor(mux);
+        GestureDetector gd = new GestureDetector(this);
+        Gdx.input.setInputProcessor(gd);
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
     }
@@ -186,11 +187,9 @@ public class GameplayScreen extends ScreenAdapter implements InputProcessor {
     @Override
     public void resume() {
         // Enable input
-        final InputMultiplexer mux = new InputMultiplexer();
+        GestureDetector gd = new GestureDetector(this);
+        Gdx.input.setInputProcessor(gd);
 
-        mux.addProcessor(camController);
-        mux.addProcessor(this);
-        Gdx.input.setInputProcessor(mux);
     }
 
     @Override
@@ -213,28 +212,13 @@ public class GameplayScreen extends ScreenAdapter implements InputProcessor {
     // ------------------------------------------------------------------------
 
     @Override
-    public boolean keyDown(int keycode) {
+    public boolean touchDown(float x, float y, int pointer, int button) {
         return false;
     }
 
     @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (pointer == 0 && button == 0) {
+    public boolean tap(float x, float y, int count, int button) {
+        if (button == 0) {
             final float tile_size = tileMap.tileSet.tileSize;
             final Vector2 towerPos = new Vector2();
             for (Tower tower : tileMap.getTowers()) {
@@ -248,23 +232,42 @@ public class GameplayScreen extends ScreenAdapter implements InputProcessor {
                 }
             }
         }
-
         return false;
     }
 
     @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
+    public boolean longPress(float x, float y) {
         return false;
     }
 
     @Override
-    public boolean mouseMoved(int screenX, int screenY) {
+    public boolean fling(float velocityX, float velocityY, int button) {
         return false;
     }
 
     @Override
-    public boolean scrolled(int amount) {
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        //TODO make place panning code
         return false;
     }
+
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        return false;
+    }
+
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        return false;
+    }
+
+
+
+
 
 }
