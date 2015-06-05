@@ -10,6 +10,7 @@ public class Assets {
 
     public static Texture weaponsTexture;
     public static Texture vehiclesTexture;
+    public static Texture placeButtonTexture;
 
     public static TextureRegion[][] weaponRegions;
     public static TextureRegion[][] vehicleRegions;
@@ -18,6 +19,7 @@ public class Assets {
     public static void load() {
         weaponsTexture = new Texture("fantasy-sprites.png");
         vehiclesTexture = new Texture("fantasy-sprites.png");
+        placeButtonTexture = new Texture("place_button.png");
 
         weaponRegions = TextureRegion.split(weaponsTexture, 16, 16);
         vehicleRegions = TextureRegion.split(vehiclesTexture, 16, 16);

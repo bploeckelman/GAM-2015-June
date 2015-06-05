@@ -9,11 +9,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
+import com.lando.systems.June15GAM.Assets;
 import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.buildings.Tower;
 import com.lando.systems.June15GAM.enemies.Ship;
@@ -35,10 +37,13 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     OrthographicCamera camera;
     BitmapFont         font;
 
+    Rectangle          placeButtonRect;
+
 
 
     public enum Gameplay {
         BUILD,
+        CANNON,
         ATTACK
         // ???
         // PROFIT
@@ -87,6 +92,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         Gdx.input.setInputProcessor(gd);
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
+
+        placeButtonRect = new Rectangle(camera.viewportWidth - 94, 30, 64, 64 );
     }
 
     @Override
@@ -122,6 +129,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         batch.begin();
         batch.draw(sceneRegion, 0, 0, camera.viewportWidth, camera.viewportHeight); // TODO Something is messed up with how android is drawing this
         batch.end();
+
+        // UI stuff
+        batch.begin();
+        batch.draw(Assets.placeButtonTexture, placeButtonRect.x, placeButtonRect.y, placeButtonRect.width, placeButtonRect.height);
+        batch.end();
     }
 
     public void update(float delta) {
@@ -131,6 +143,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
         switch (phase) {
             case BUILD:  updateBuild(delta);  break;
+            case CANNON: updateCannon(delta); break;
             case ATTACK: updateAttack(delta); break;
         }
 
@@ -138,11 +151,17 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         updateMouseVectors(camera);
     }
 
+
+
     private void updateBuild(float delta) {
         // TODO: switch to attack phase based on some condition (timer? done placing wall sections?)
         if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
             phase = Gameplay.ATTACK;
         }
+    }
+
+    private void updateCannon(float delta){
+
     }
 
     private void updateAttack(float delta) {
@@ -219,6 +238,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         if (button == 0) {
             switch (phase) {
                 case BUILD:  tapBuild();  break;
+                case CANNON: tapCannon(); break;
                 case ATTACK: tapAttack();  break;
             }
         }
@@ -226,7 +246,14 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     }
 
     private void tapBuild(){
-    //  TODO: this is debug
+
+        if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
+            // TODO: place a wall here
+            return;
+        }
+
+
+        //  TODO: this is debug
         int x = (int) (mouseWorldPos.x / tileMap.tileSet.tileSize);
         int y = (int) (mouseWorldPos.y / tileMap.tileSet.tileSize);
         if (tileMap.getTileType( x, y) != TileType.WATER){
@@ -234,6 +261,10 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             else tileMap.destroyBuildingAt(x,y);
             tileMap.setInternal();
         }
+    }
+
+    private void tapCannon(){
+
     }
 
     private void tapAttack(){
@@ -263,12 +294,13 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
+        if (phase == Gameplay.ATTACK) return false;
         float panScale = 1;
         if (tileMap.tetris != null){
             tileMap.tetris.xFloat += deltaX * panScale;
             tileMap.tetris.yFloat -= deltaY * panScale;
         }
-        return false;
+        return true;
     }
 
     @Override

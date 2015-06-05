@@ -12,6 +12,14 @@ public class MoveableObject {
 
 
     public void render(SpriteBatch batch){
-        batch.draw(Assets.weaponsTexture, (int)(xFloat / 16) * 16, (int)(yFloat / 16) * 16, 16, 16);
+        batch.draw(Assets.weaponsTexture, getTileX() * 16, getTileY() * 16, 16, 16);
+    }
+
+    public int getTileX(){
+        return (int)(xFloat/16); // Todo: make this not a magic number?
+    }
+
+    public int getTileY(){
+        return (int)(yFloat/16); // Todo: make this not a magic number?
     }
 }
