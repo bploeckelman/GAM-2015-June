@@ -316,8 +316,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         if (phase == Gameplay.ATTACK) return false;
         float panScale = 1;
         if (tileMap.tetris != null){
-            tileMap.tetris.xFloat += deltaX * panScale;
-            tileMap.tetris.yFloat -= deltaY * panScale;
+            tileMap.tetris.addX(deltaX * panScale);
+            tileMap.tetris.addY(-deltaY * panScale);
         }
         return true;
     }

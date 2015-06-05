@@ -112,8 +112,7 @@ public class TileMap {
 
     public void setTower(int x, int y){
         buildings.put(x + y * width, new Tower(x, y));
-        reconcileWalls();
-        setInternal();
+
     }
 
     public TileType getTileType(int x, int y){

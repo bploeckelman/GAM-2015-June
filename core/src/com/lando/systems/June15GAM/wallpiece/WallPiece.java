@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.lando.systems.June15GAM.buildings.MoveableObject;
 import com.lando.systems.June15GAM.tilemap.TileMap;
 import com.lando.systems.June15GAM.tilemap.TileTexture;
+import com.lando.systems.June15GAM.tilemap.TileType;
 
 public class WallPiece extends MoveableObject{
 
@@ -27,6 +28,7 @@ public class WallPiece extends MoveableObject{
             for (int col = 0; col < pieceMap[0].length; col++){
                 if (pieceMap[row][col]){
                     if (tileMap.getBuildingAt(getTileX() + row, getTileY() + col) != null) return false;
+                    if (tileMap.getTileType(getTileX() + row, getTileY() + col) == TileType.WATER) return false;
                 }
             }
         }
@@ -43,6 +45,8 @@ public class WallPiece extends MoveableObject{
                     }
                 }
             }
+            map.reconcileWalls();
+            map.setInternal();
             createNewPiece();
             return true;
         }
@@ -101,14 +105,43 @@ public class WallPiece extends MoveableObject{
             }
         }
         this.pieceMap = rotatedPieceMap;
+        calculateSize();
+    }
+
+    private void calculateSize(){
+        int minX = 5;
+        int minY = 5;
+        int maxX = 0;
+        int maxY = 0;
+        for (int x = 0; x < pieceMap.length; x++){
+            for (int y = 0; y < pieceMap[0].length; y++){
+                if (pieceMap[x][y]){
+                    minX = Math.min(x, minX);
+                    minY = Math.min(y, minY);
+                    maxX = Math.max(x, maxX);
+                    maxY = Math.max(y, maxY);
+                }
+            }
+        }
+        offsetX = minX;
+        offsetY = minY;
+        offsetMaxX = maxX + 1;
+        offsetMaxY = maxY + 1;
+
+        // These keep it on the map;
+        addX(.01f);
+        addY(.01f);
     }
 
     private void createNewPiece(){
-        switch (MathUtils.random(2)){
+        switch (MathUtils.random(4)){
             case 0: makeFourLine(); break;
             case 1: makeTwoLine(); break;
             case 2: makeT(); break;
+            case 3: makeS(); break;
+            case 4: makeZ(); break;
         }
+        calculateSize();
     }
 
     private void makeFourLine(){
@@ -131,6 +164,26 @@ public class WallPiece extends MoveableObject{
         pieceMap[2][1] = true;
         pieceMap[3][1] = true;
         pieceMap[2][2] = true;
+    }
+
+    private void makeS(){
+        pieceMap = new boolean[4][4];
+        pieceMap[0][1] = true;
+        pieceMap[1][1] = true;
+        pieceMap[2][1] = true;
+        pieceMap[3][1] = true;
+        pieceMap[0][0] = true;
+        pieceMap[3][2] = true;
+    }
+
+    private void makeZ(){
+        pieceMap = new boolean[4][4];
+        pieceMap[0][1] = true;
+        pieceMap[1][1] = true;
+        pieceMap[2][1] = true;
+        pieceMap[3][1] = true;
+        pieceMap[3][0] = true;
+        pieceMap[0][2] = true;
     }
 
     /*
