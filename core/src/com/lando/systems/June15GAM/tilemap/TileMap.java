@@ -14,7 +14,7 @@ import java.util.HashMap;
 /**
  * Brian Ploeckelman created on 5/12/2015.
  */
-public class TileMap implements Runnable{
+public class TileMap {
 
     public TileSet  tileSet;
     public Tile[][] tiles;
@@ -37,13 +37,12 @@ public class TileMap implements Runnable{
         tiles = new Tile[yTiles][xTiles];
         for (int y = 0; y < tiles.length; ++y) {
             for (int x = 0; x < tiles[y].length; ++x) {
-                tiles[y][x] = new Tile();
+
                 if (x + y > 50) {
-                    tiles[y][x].texture = TileTexture.GROUND_WATER;
-                    tiles[y][x].type = TileType.WATER;
+                    tiles[y][x] = new Tile(TileType.WATER, TileTexture.GROUND_WATER, x, y);
                 } else {
-                    tiles[y][x].texture = TileTexture.GROUND_GRASS;
-                    tiles[y][x].type = TileType.GROUND;
+                    tiles[y][x] = new Tile(TileType.GROUND, TileTexture.GROUND_GRASS, x, y);
+
                 }
             }
         }
@@ -129,25 +128,11 @@ public class TileMap implements Runnable{
     private void findInternals(){
         resetGround(TileType.INTERIOR);
 
-        // Android has a tiny stack on the main thread.  This fixes it =)
-        Thread thread = new Thread(new ThreadGroup("Worker"), this, "LargerStack", 1000000);
-        thread.start();
-        try {
-            while(thread.isAlive())
-            {
-                Thread.sleep(10);
-            }
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        setInternal();
 
-        if (tiles[homeKeep.y][homeKeep.x].type != TileType.INTERIOR) gameLost = true;
+       // if (tiles[homeKeep.y][homeKeep.x].type != TileType.INTERIOR) gameLost = true; // TODO this should be a seperate check as this will be called each time a tile is placed.
     }
 
-    public void run(){
-        setInternal(0, 0);
-    }
 
     private void resetGround(TileType type){
         for (int y = 0; y < tiles.length; ++y) {
@@ -157,35 +142,63 @@ public class TileMap implements Runnable{
         }
     }
 
+
     /**
      * Walk the map and set tiles that are not surrounded to ground
-     * @param x x position
-     * @param y y position
      * return
      */
-    public void setInternal(int x, int y){
-        if (x < 0 || x >= width) return; // outside bounds
-        if (y < 0 || y >= height) return; // outside bounds
-        Tile currentTile = tiles[y][x];
-        if (currentTile.type == TileType.WATER) return; // TODO this may be bad, may need to check water somehow later
+    public void setInternal(){
+        ArrayList<Tile> tilesToCheck = new ArrayList<Tile>();
+        ArrayList<Tile> checkedTiles = new ArrayList<Tile>(); // TODO reuse these if GC is an issue
 
-        if (currentTile.type == TileType.GROUND) return;
+        // Add all edge tiles
+        for (int i = 0; i < width; i++){
+            Tile checkedTile = tiles[0][i];
+            tilesToCheck.add(checkedTile);
+            checkedTiles.add(checkedTile);
 
-        Building building = buildings.get(x + y * width);
+            checkedTile = tiles[height -1][i];
+            tilesToCheck.add(checkedTile);
+            checkedTiles.add(checkedTile);
+        }
+        for (int i = 0; i < height; i++){
+            Tile checkedTile = tiles[i][0];
+            tilesToCheck.add(checkedTile);
+            checkedTiles.add(checkedTile);
 
-        if (building != null && building instanceof Wall) return;
+            checkedTile = tiles[i][width -1];
+            tilesToCheck.add(checkedTile);
+            checkedTiles.add(checkedTile);
+        }
 
-        currentTile.type = TileType.GROUND;
-        setInternal(x - 1, y - 1);
-        setInternal(x - 1, y);
-        setInternal(x - 1, y + 1);
-        setInternal(x, y - 1);
-        setInternal(x, y + 1);
-        setInternal(x + 1, y - 1);
-        setInternal(x + 1, y);
-        setInternal(x + 1, y + 1);
+        while(!tilesToCheck.isEmpty()){
+            Tile currentTile = tilesToCheck.remove(0);
 
+            Building building = buildings.get(currentTile.x + currentTile.y * width);
+            if (building != null && building instanceof Wall) continue;
 
+            // not wall lets keep walking
+            if (currentTile.type == TileType.INTERIOR) currentTile.type = TileType.GROUND;
+            for (int i = -1; i <= 1; i++){
+                for (int j = -1; j <= 1; j++){
+                    int testX = currentTile.x + i;
+                    int testY = currentTile.y + j;
+                    if (inBounds(testX, testY)){
+                        if (!checkedTiles.contains(tiles[testY][testX])){
+                            Tile nextTile = tiles[testY][testX];
+                            tilesToCheck.add(nextTile);
+                            checkedTiles.add(nextTile);
+                        }
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    private boolean inBounds(int x, int y){
+        return x >= 0 && x < width && y >= 0 && y < height;
     }
 
     private void makeStarterCastle(int x, int y){
