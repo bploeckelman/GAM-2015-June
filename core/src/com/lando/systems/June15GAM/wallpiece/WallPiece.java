@@ -1,40 +1,66 @@
 package com.lando.systems.June15GAM.wallpiece;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.lando.systems.June15GAM.buildings.MoveableObject;
 import com.lando.systems.June15GAM.tilemap.TileMap;
+import com.lando.systems.June15GAM.tilemap.TileTexture;
 
-public class WallPiece {
+public class WallPiece extends MoveableObject{
 
     public enum R {
         C, CC
     }
 
     private boolean[][] pieceMap;
-    private int originX;
-    private int originY;
-    private WallPieceDirection dir;
 
-    public WallPiece (boolean[][] pieceMap, int originX, int originY) {
-        // Validate
-        if (pieceMap.length == 0) {
-            throw new RuntimeException("Invalid input; pieceMap must not be empty");
-        }
+    public WallPiece () {
+        createNewPiece();
 
-        int pieceMapHeight = pieceMap[0].length;
-        for (int i = 1; i < pieceMap.length; i++) {
-            if (pieceMap[i].length != pieceMapHeight) {
-                throw new RuntimeException("Invalid input; pieceMap columns must all be of same length");
-            }
-        }
-        this.pieceMap = pieceMap;
-        this.originX = originX;
-        this.originY = originY;
     }
 
-    public boolean isValidPlacement(TileMap tileMap, int mapX, int mapY) {
-
+    public boolean isValidPlacement(TileMap tileMap) {
+        for (int row = 0; row < pieceMap.length; row++){
+            for (int col = 0; col < pieceMap[0].length; col++){
+                if (pieceMap[row][col]){
+                    if (tileMap.getBuildingAt(getTileX() + row, getTileY() + col) != null) return false;
+                }
+            }
+        }
         return true;
 
+    }
+
+    public boolean place(TileMap map){
+        if (isValidPlacement(map)){
+            for (int row = 0; row < pieceMap.length; row++){
+                for (int col = 0; col < pieceMap[0].length; col++){
+                    if (pieceMap[row][col]){
+                        map.setWall(getTileX() + row, getTileY() + col);
+                    }
+                }
+            }
+            createNewPiece();
+            return true;
+        }
+        return false;
+    }
+
+    public void render(TileMap map, SpriteBatch batch){
+        if (isValidPlacement(map)) batch.setColor(1,1,1,.5f);
+        else batch.setColor(1,0,0,.5f);
+        for (int row = 0; row < pieceMap.length; row++){
+            for (int col = 0; col < pieceMap[0].length; col++){
+                if (pieceMap[row][col]){
+                    final TextureRegion tile = map.tileSet.textures.get(TileTexture.GROUND_CLAY);
+                    batch.draw(tile, (getTileX() + row) * map.tileSet.tileSize, (getTileY() + col) * map.tileSet.tileSize, map.tileSet.tileSize, map.tileSet.tileSize);
+                }
+            }
+        }
+        batch.setColor(Color.WHITE);
     }
 
 //    public void rotate(R r) {
@@ -75,6 +101,36 @@ public class WallPiece {
             }
         }
         this.pieceMap = rotatedPieceMap;
+    }
+
+    private void createNewPiece(){
+        switch (MathUtils.random(2)){
+            case 0: makeFourLine(); break;
+            case 1: makeTwoLine(); break;
+            case 2: makeT(); break;
+        }
+    }
+
+    private void makeFourLine(){
+        pieceMap = new boolean[4][4];
+        pieceMap[1][0] = true;
+        pieceMap[1][1] = true;
+        pieceMap[1][2] = true;
+        pieceMap[1][3] = true;
+    }
+
+    private void makeTwoLine(){
+        pieceMap = new boolean[4][4];
+        pieceMap[1][1] = true;
+        pieceMap[1][2] = true;
+    }
+
+    private void makeT(){
+        pieceMap = new boolean[4][4];
+        pieceMap[1][1] = true;
+        pieceMap[2][1] = true;
+        pieceMap[3][1] = true;
+        pieceMap[2][2] = true;
     }
 
     /*

@@ -21,6 +21,7 @@ import com.lando.systems.June15GAM.buildings.Tower;
 import com.lando.systems.June15GAM.enemies.Ship;
 import com.lando.systems.June15GAM.tilemap.TileMap;
 import com.lando.systems.June15GAM.tilemap.TileType;
+import com.lando.systems.June15GAM.wallpiece.WallPiece;
 import com.lando.systems.June15GAM.weapons.Cannonball;
 
 /**
@@ -38,6 +39,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     BitmapFont         font;
 
     Rectangle          placeButtonRect;
+    Rectangle          rotateButtonRect;
 
 
 
@@ -94,6 +96,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         Gdx.gl.glClearColor(0, 0, 0, 1);
 
         placeButtonRect = new Rectangle(camera.viewportWidth - 94, 30, 64, 64 );
+        rotateButtonRect = new Rectangle(camera.viewportWidth - 94, 124, 64, 64 );
     }
 
     @Override
@@ -132,7 +135,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
         // UI stuff
         batch.begin();
-        batch.draw(Assets.placeButtonTexture, placeButtonRect.x, placeButtonRect.y, placeButtonRect.width, placeButtonRect.height);
+        if (phase != Gameplay.ATTACK)
+            batch.draw(Assets.placeButtonTexture, placeButtonRect.x, placeButtonRect.y, placeButtonRect.width, placeButtonRect.height);
+        if (phase == Gameplay.BUILD)
+            batch.draw(Assets.placeButtonTexture, rotateButtonRect.x, rotateButtonRect.y, rotateButtonRect.width, rotateButtonRect.height);
+
         batch.end();
     }
 
@@ -248,19 +255,13 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     private void tapBuild(){
 
         if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
-            // TODO: place a wall here
+            tileMap.tetris.place(tileMap);
             return;
         }
-
-
-        //  TODO: this is debug
-        int x = (int) (mouseWorldPos.x / tileMap.tileSet.tileSize);
-        int y = (int) (mouseWorldPos.y / tileMap.tileSet.tileSize);
-        if (tileMap.getTileType( x, y) != TileType.WATER){
-            if (tileMap.getBuildingAt(x, y) == null) tileMap.setWall(x, y);
-            else tileMap.destroyBuildingAt(x,y);
-            tileMap.setInternal();
+        if (rotateButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
+            tileMap.tetris.rotate(WallPiece.R.C);
         }
+
     }
 
     private void tapCannon(){

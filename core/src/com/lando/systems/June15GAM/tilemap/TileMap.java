@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.lando.systems.June15GAM.buildings.*;
+import com.lando.systems.June15GAM.wallpiece.WallPiece;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class TileMap {
 
 
     public TileMap(int xTiles, int yTiles) {
-        tetris = new MoveableObject();
+        tetris = new WallPiece();
         gameLost = false;
         buildings = new HashMap<Integer, Building>();
         width = xTiles;
@@ -69,7 +70,9 @@ public class TileMap {
             final TextureRegion tile = tileSet.textures.get(building.texture);
             batch.draw(tile, building.x * tileSet.tileSize, building.y * tileSet.tileSize, tileSet.tileSize, tileSet.tileSize);
         }
-        tetris.render(batch);
+
+        tetris.render(this, batch);
+
     }
 
 
