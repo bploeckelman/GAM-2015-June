@@ -263,7 +263,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        //TODO make place panning code
+        float panScale = 1;
+        if (tileMap.tetris != null){
+            tileMap.tetris.xFloat += deltaX * panScale;
+            tileMap.tetris.yFloat -= deltaY * panScale;
+        }
         return false;
     }
 
