@@ -48,7 +48,7 @@ public class TileMap {
         }
 
         makeStarterCastle(15, 15);
-        findInternals();
+        setInternal();
         reconcileWalls();
     }
 
@@ -66,6 +66,7 @@ public class TileMap {
             }
         }
         for (Building building : buildings.values()){
+            if (building == null) continue;
             final TextureRegion tile = tileSet.textures.get(building.texture);
             batch.draw(tile, building.x * tileSet.tileSize, building.y * tileSet.tileSize, tileSet.tileSize, tileSet.tileSize);
         }
@@ -102,14 +103,26 @@ public class TileMap {
 
     public void setWall(int x, int y){
         buildings.put(x + y * width, new Wall(x, y));
+        reconcileWalls();
+        setInternal();
     }
 
     public void setTower(int x, int y){
         buildings.put(x + y * width, new Tower(x, y));
+        reconcileWalls();
+        setInternal();
+    }
+
+    public TileType getTileType(int x, int y){
+        if (inBounds(x, y)){
+            return tiles[y][x].type;
+        }
+        return null;
     }
 
     public void destroyBuildingAt(int x, int y){
         buildings.put(x + y * width, null);
+        reconcileWalls();
     }
 
     public void reconcileWalls(){
@@ -125,13 +138,7 @@ public class TileMap {
         }
     }
 
-    private void findInternals(){
-        resetGround(TileType.INTERIOR);
 
-        setInternal();
-
-       // if (tiles[homeKeep.y][homeKeep.x].type != TileType.INTERIOR) gameLost = true; // TODO this should be a seperate check as this will be called each time a tile is placed.
-    }
 
 
     private void resetGround(TileType type){
@@ -148,6 +155,8 @@ public class TileMap {
      * return
      */
     public void setInternal(){
+        resetGround(TileType.INTERIOR);
+
         ArrayList<Tile> tilesToCheck = new ArrayList<Tile>();
         ArrayList<Tile> checkedTiles = new ArrayList<Tile>(); // TODO reuse these if GC is an issue
 

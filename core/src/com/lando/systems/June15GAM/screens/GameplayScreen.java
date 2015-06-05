@@ -18,6 +18,7 @@ import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.buildings.Tower;
 import com.lando.systems.June15GAM.enemies.Ship;
 import com.lando.systems.June15GAM.tilemap.TileMap;
+import com.lando.systems.June15GAM.tilemap.TileType;
 import com.lando.systems.June15GAM.weapons.Cannonball;
 
 /**
@@ -225,7 +226,14 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     }
 
     private void tapBuild(){
-
+    //  TODO: this is debug
+        int x = (int) (mouseWorldPos.x / tileMap.tileSet.tileSize);
+        int y = (int) (mouseWorldPos.y / tileMap.tileSet.tileSize);
+        if (tileMap.getTileType( x, y) != TileType.WATER){
+            if (tileMap.getBuildingAt(x, y) == null) tileMap.setWall(x, y);
+            else tileMap.destroyBuildingAt(x,y);
+            tileMap.setInternal();
+        }
     }
 
     private void tapAttack(){
