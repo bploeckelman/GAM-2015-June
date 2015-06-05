@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Pools;
 import com.lando.systems.June15GAM.Assets;
 import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.buildings.Tower;
+import com.lando.systems.June15GAM.effects.ExplosionWater;
 import com.lando.systems.June15GAM.enemies.Ship;
 import com.lando.systems.June15GAM.tilemap.TileMap;
 import com.lando.systems.June15GAM.tilemap.TileType;
@@ -104,13 +105,18 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+
+        // Draw scene stuff
         tileMap.render(batch);
+        ExplosionWater.renderExplosions(batch);
         if (phase == Gameplay.ATTACK) {
             ship.render(batch);
             for (Cannonball cannonball : activeCannonballs) {
                 cannonball.render(batch);
             }
         }
+
+        // Draw user interface overlays
         font.draw(batch, "Turn #" + turn + ": " + phase.name(), 10, camera.viewportHeight - 10);
         float x = 10f;
         int i = 1;
@@ -147,6 +153,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             case ATTACK: updateAttack(delta); break;
         }
 
+        ExplosionWater.updateExplosions(delta);
+
         camera.update();
         updateMouseVectors(camera);
     }
@@ -180,9 +188,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         for (int i = activeCannonballs.size - 1; i >= 0; --i) {
             Cannonball cannonball = activeCannonballs.get(i);
             if (cannonball.position.epsilonEquals(cannonball.target, tileMap.tileSet.tileSize / 2f)) {
+                ExplosionWater.newExplosion(cannonball.position.x, cannonball.position.y);
                 cannonballPool.free(cannonball);
                 activeCannonballs.removeIndex(i);
-                // TODO: kaboom
             } else {
                 cannonball.update(delta);
             }
