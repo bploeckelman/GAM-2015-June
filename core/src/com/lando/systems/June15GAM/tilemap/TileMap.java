@@ -106,13 +106,10 @@ public class TileMap {
 
     public void setWall(int x, int y){
         buildings.put(x + y * width, new Wall(x, y));
-        reconcileWalls();
-        setInternal();
     }
 
     public void setTower(int x, int y){
         buildings.put(x + y * width, new Tower(x, y));
-
     }
 
     public TileType getTileType(int x, int y){
@@ -156,11 +153,13 @@ public class TileMap {
      * Walk the map and set tiles that are not surrounded to ground
      * return
      */
+    ArrayList<Tile> tilesToCheck = new ArrayList<Tile>();
+    ArrayList<Tile> checkedTiles = new ArrayList<Tile>();
     public void setInternal(){
         resetGround(TileType.INTERIOR);
 
-        ArrayList<Tile> tilesToCheck = new ArrayList<Tile>();
-        ArrayList<Tile> checkedTiles = new ArrayList<Tile>(); // TODO reuse these if GC is an issue
+        tilesToCheck.clear();
+        checkedTiles.clear();
 
         // Add all edge tiles
         for (int i = 0; i < width; i++){
