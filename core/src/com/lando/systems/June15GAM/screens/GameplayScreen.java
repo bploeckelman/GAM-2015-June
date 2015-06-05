@@ -260,8 +260,10 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             tower.update(delta);
         }
 
+        // TODO: clean this stuff up
         for (int i = activeCannonballs.size - 1; i >= 0; --i) {
             Cannonball cannonball = activeCannonballs.get(i);
+            cannonball.update(delta);
             if (cannonball.position.epsilonEquals(cannonball.target, tileMap.tileSet.tileSize / 2f)) {
                 final int tx = (int) (cannonball.position.x / tileMap.tileSet.tileSize);
                 final int ty = (int) (cannonball.position.y / tileMap.tileSet.tileSize);
@@ -273,7 +275,23 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 cannonballPool.free(cannonball);
                 activeCannonballs.removeIndex(i);
             } else {
-                cannonball.update(delta);
+                for (int s = ships.size - 1; s >= 0; --s) {
+                    final Ship ship = ships.get(s);
+                    if (cannonball.position.epsilonEquals(ship.position, tileMap.tileSet.tileSize / 2f)) {
+                        final int tx = (int) (cannonball.position.x / tileMap.tileSet.tileSize);
+                        final int ty = (int) (cannonball.position.y / tileMap.tileSet.tileSize);
+                        TileType tileType = tileMap.getTileType(tx, ty);
+                        if (tileType == null) tileType = TileType.GROUND;
+                        final Effect.Type effectType = tileType == TileType.GROUND ? Effect.Type.EXPLOSION_GROUND : Effect.Type.EXPLOSION_WATER;
+                        effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
+
+                        cannonballPool.free(cannonball);
+                        activeCannonballs.removeIndex(i);
+
+                        // TODO: moar kaboom
+                        ships.removeIndex(s);
+                    }
+                }
             }
         }
         if (phaseTimer <= 0 && activeCannonballs.size == 0){
