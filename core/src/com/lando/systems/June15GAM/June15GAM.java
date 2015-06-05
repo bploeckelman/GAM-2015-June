@@ -42,8 +42,12 @@ public class June15GAM extends Game {
         super.render();
     }
 
-    public void exit() {
+    @Override
+    public void dispose() {
         Assets.dispose();
+    }
+
+    public void exit() {
         Gdx.app.exit();
     }
 
