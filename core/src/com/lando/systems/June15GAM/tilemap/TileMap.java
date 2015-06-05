@@ -38,7 +38,7 @@ public class TileMap {
         for (int y = 0; y < tiles.length; ++y) {
             for (int x = 0; x < tiles[y].length; ++x) {
 
-                if (x + y > 50) {
+                if (y > (tiles.length * 2 / 3)) {
                     tiles[y][x] = new Tile(TileType.WATER, TileTexture.GROUND_WATER, x, y);
                 } else {
                     tiles[y][x] = new Tile(TileType.GROUND, TileTexture.GROUND_GRASS, x, y);
