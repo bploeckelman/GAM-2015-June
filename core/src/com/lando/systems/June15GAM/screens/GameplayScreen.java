@@ -18,6 +18,8 @@ import com.badlogic.gdx.utils.Pools;
 import com.lando.systems.June15GAM.Assets;
 import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.buildings.Tower;
+import com.lando.systems.June15GAM.effects.Effect;
+import com.lando.systems.June15GAM.effects.EffectsManager;
 import com.lando.systems.June15GAM.effects.ExplosionWater;
 import com.lando.systems.June15GAM.enemies.Ship;
 import com.lando.systems.June15GAM.tilemap.TileMap;
@@ -38,6 +40,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     TextureRegion      sceneRegion;
     OrthographicCamera camera;
     BitmapFont         font;
+    EffectsManager     effectsManager;
 
     Rectangle          placeButtonRect;
     Rectangle          rotateButtonRect;
@@ -76,6 +79,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         font = new BitmapFont();
         font.setColor(Color.WHITE);
         font.getData().setScale(2f);
+        effectsManager = new EffectsManager();
 
         phase = Gameplay.BUILD;
         turn = 0;
@@ -111,7 +115,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
         // Draw scene stuff
         tileMap.render(batch);
-        ExplosionWater.renderExplosions(batch);
+        effectsManager.render(batch);
         if (phase == Gameplay.ATTACK) {
             ship.render(batch);
             for (Cannonball cannonball : activeCannonballs) {
@@ -160,7 +164,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             case ATTACK: updateAttack(delta); break;
         }
 
-        ExplosionWater.updateExplosions(delta);
+        effectsManager.update(delta);
 
         camera.update();
         updateMouseVectors(camera);
@@ -195,7 +199,13 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         for (int i = activeCannonballs.size - 1; i >= 0; --i) {
             Cannonball cannonball = activeCannonballs.get(i);
             if (cannonball.position.epsilonEquals(cannonball.target, tileMap.tileSet.tileSize / 2f)) {
-                ExplosionWater.newExplosion(cannonball.position.x, cannonball.position.y);
+                final int tx = (int) (cannonball.position.x / tileMap.tileSet.tileSize);
+                final int ty = (int) (cannonball.position.y / tileMap.tileSet.tileSize);
+                TileType tileType = tileMap.getTileType(tx, ty);
+                if (tileType == null) tileType = TileType.GROUND;
+                final Effect.Type effectType = tileType == TileType.GROUND ? Effect.Type.EXPLOSION_GROUND : Effect.Type.EXPLOSION_WATER;
+                effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
+
                 cannonballPool.free(cannonball);
                 activeCannonballs.removeIndex(i);
             } else {

@@ -10,7 +10,13 @@ import com.badlogic.gdx.utils.Pool;
 /**
  * Brian Ploeckelman created on 6/4/2015.
  */
-public class Effect {
+public class Effect implements Pool.Poolable {
+
+    public enum Type {
+        EXPLOSION_WATER,
+        EXPLOSION_GROUND
+        // ...
+    }
 
     public Vector2      position;
     public MutableFloat scale;
@@ -30,6 +36,13 @@ public class Effect {
     public void init(float x, float y) {
         position.set(x, y);
         alive = true;
+        stateTime = 0;
+    }
+
+    @Override
+    public void reset() {
+        position.set(0, 0);
+        alive = false;
         stateTime = 0;
     }
 

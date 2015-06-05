@@ -3,6 +3,7 @@ package com.lando.systems.June15GAM;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.lando.systems.June15GAM.effects.ExplosionGround;
 import com.lando.systems.June15GAM.effects.ExplosionWater;
 
 /**
@@ -20,6 +21,7 @@ public class Assets {
     public static TextureRegion[][] vehicleRegions;
 
     public static Animation explosionWaterAnim;
+    public static Animation explosionGroundAnim;
 
     public static void load() {
         effectsTexture = new Texture("oryx_16bit_scifi_FX_lg_trans.png");
@@ -41,6 +43,17 @@ public class Assets {
                 effectsRegions[9][2],
                 effectsRegions[2][4],
                 effectsRegions[10][4],
+                effectsRegions[10][5],
+                effectsRegions[2][5]);
+
+        explosionGroundAnim = new Animation(
+                ExplosionGround.explosion_ground_time,
+                effectsRegions[9][0],
+                effectsRegions[9][1],
+                effectsRegions[10][2],
+                effectsRegions[10][3],
+                effectsRegions[9][6],
+                effectsRegions[9][7],
                 effectsRegions[10][5],
                 effectsRegions[2][5]);
     }
