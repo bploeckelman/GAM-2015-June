@@ -68,8 +68,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         batch = new SpriteBatch();
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
         sceneRegion.flip(false, true);
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, June15GAM.win_width, June15GAM.win_height);
+        camera = new OrthographicCamera(June15GAM.win_width, June15GAM.win_height);
+        camera.translate(June15GAM.win_width / 2f, June15GAM.win_height / 2f);
         camera.update();
         font = new BitmapFont();
         font.setColor(Color.WHITE);
@@ -199,8 +199,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     @Override
     public void resize(int width, int height) {
-        camera.setToOrtho(false, width, height);
-        camera.update();
+//        camera.setToOrtho(false, width, height);
+//        camera.update();
     }
 
     @Override
