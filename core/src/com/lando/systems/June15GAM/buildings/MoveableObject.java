@@ -45,4 +45,8 @@ public class MoveableObject {
     public void rotate(WallPiece.R r){
 
     }
+    
+    public int getNumberLeft(){
+        return 0;
+    }
 }

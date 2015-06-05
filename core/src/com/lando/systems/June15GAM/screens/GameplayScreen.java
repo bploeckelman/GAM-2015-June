@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -18,6 +19,7 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 import com.lando.systems.June15GAM.Assets;
 import com.lando.systems.June15GAM.June15GAM;
+import com.lando.systems.June15GAM.buildings.CannonPlacer;
 import com.lando.systems.June15GAM.buildings.Tower;
 import com.lando.systems.June15GAM.effects.Effect;
 import com.lando.systems.June15GAM.effects.EffectsManager;
@@ -47,6 +49,15 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     Rectangle          placeButtonRect;
     Rectangle          rotateButtonRect;
+
+    boolean            phaseActive;
+    float              phaseTimer;
+    float              phaseEntryTimer;
+    final float        cannonTimer = 15;
+    final float        attackTimer = 30;
+    final float        buildTimer = 15;
+    final float        phaseEntryDelayTime = 1;
+    GlyphLayout layout = new GlyphLayout();
 
 
 
@@ -84,7 +95,10 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         font.getData().setScale(2f);
         effectsManager = new EffectsManager();
 
-        phase = Gameplay.BUILD;
+        phaseEntryTimer = 1;
+        phase = Gameplay.CANNON;
+        phaseTimer = cannonTimer;
+        phaseActive = false;
         turn = 0;
 
         final TileSet tileSet = new TileSetOverhead();
@@ -138,6 +152,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
         // Draw user interface overlays
         font.draw(batch, "Turn #" + turn + ": " + phase.name(), 10, camera.viewportHeight - 10);
+        String timerString = "Time Left: " + (int)Math.max(Math.ceil(phaseTimer), 0);
+        layout.setText(font, timerString);
+        font.draw(batch, timerString, camera.viewportWidth - (layout.width + 30), camera.viewportHeight - 10);
         float x = 10f;
         int i = 1;
         for (Tower tower : tileMap.getTowers()) {
@@ -153,16 +170,24 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(sceneRegion, 0, 0, camera.viewportWidth, camera.viewportHeight); // TODO Something is messed up with how android is drawing this
+        batch.draw(sceneRegion, 0, 0, camera.viewportWidth, camera.viewportHeight);
         batch.end();
 
         // UI stuff
         batch.begin();
-        if (phase != Gameplay.ATTACK)
+        if (phase != Gameplay.ATTACK) {
             batch.draw(Assets.placeButtonTexture, placeButtonRect.x, placeButtonRect.y, placeButtonRect.width, placeButtonRect.height);
+            tileMap.tetris.render(tileMap, batch);
+        }
         if (phase == Gameplay.BUILD)
             batch.draw(Assets.placeButtonTexture, rotateButtonRect.x, rotateButtonRect.y, rotateButtonRect.width, rotateButtonRect.height);
 
+        if (!phaseActive){
+            font.getData().setScale(5);
+            layout.setText(font, phase.name() + " Phase!");
+            font.draw(batch, phase.name() + " Phase!", (camera.viewportWidth - layout.width) / 2, (camera.viewportHeight + layout.height) /2);
+            font.getData().setScale(2);
+        }
         batch.end();
     }
 
@@ -170,12 +195,20 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.exit();
         }
+        if (phaseActive){
+            phaseTimer -= delta;
 
-        switch (phase) {
-            case BUILD:  updateBuild(delta);  break;
-            case CANNON: updateCannon(delta); break;
-            case ATTACK: updateAttack(delta); break;
+            switch (phase) {
+                case BUILD:  updateBuild(delta);  break;
+                case CANNON: updateCannon(delta); break;
+                case ATTACK: updateAttack(delta); break;
+            }
+        } else {
+            phaseEntryTimer -= delta;
+            if (phaseEntryTimer <= 0) phaseActive = true;
         }
+
+
 
         effectsManager.update(delta);
 
@@ -187,21 +220,26 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     private void updateBuild(float delta) {
         // TODO: switch to attack phase based on some condition (timer? done placing wall sections?)
-        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
-            phase = Gameplay.ATTACK;
+        if (phaseTimer <= 0){
+            phase = Gameplay.CANNON;
+            phaseTimer = cannonTimer;
+            phaseActive = false;
+            phaseEntryTimer = phaseEntryDelayTime;
+            tileMap.tetris = new CannonPlacer(3); // TODO: This should be based on something
         }
+
     }
 
     private void updateCannon(float delta){
-
+        if (phaseTimer <= 0 || tileMap.tetris.getNumberLeft() <= 0){
+            phase = Gameplay.ATTACK;
+            phaseTimer = attackTimer;
+            phaseActive = false;
+            phaseEntryTimer = phaseEntryDelayTime;
+        }
     }
 
     private void updateAttack(float delta) {
-        // TODO: switch to build phase based on some condition (timer? out of ammunition?)
-        if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
-            phase = Gameplay.BUILD;
-            ++turn;
-        }
 
         for (Ship ship : ships) {
             ship.update(delta);
@@ -237,6 +275,14 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             } else {
                 cannonball.update(delta);
             }
+        }
+        if (phaseTimer <= 0 && activeCannonballs.size == 0){
+            phase = Gameplay.BUILD;
+            phaseTimer = buildTimer;
+            phaseActive = false;
+            phaseEntryTimer = phaseEntryDelayTime;
+            turn++;
+            tileMap.tetris = new WallPiece();
         }
     }
 
@@ -286,6 +332,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
+        if (phaseTimer <= 0) return true;
         if (button == 0) {
             switch (phase) {
                 case BUILD:  tapBuild();  break;
@@ -309,10 +356,14 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     }
 
     private void tapCannon(){
-
+        if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
+            tileMap.tetris.place(tileMap);
+            return;
+        }
     }
 
     private void tapAttack(){
+
         final float tile_size = tileMap.tileSet.tileSize;
         final Vector2 towerPos = new Vector2();
         for (Tower tower : tileMap.getTowers()) {

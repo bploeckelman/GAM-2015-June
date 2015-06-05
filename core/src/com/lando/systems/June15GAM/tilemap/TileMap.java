@@ -29,7 +29,7 @@ public class TileMap {
 
     public TileMap(TileSet tileSet, int xTiles, int yTiles) {
         this.tileSet = tileSet;
-        tetris = new WallPiece();
+        tetris = new CannonPlacer(4);
         gameLost = false;
         buildings = new HashMap<Integer, Building>();
         width = xTiles;
@@ -72,7 +72,7 @@ public class TileMap {
             batch.draw(tile, building.x * tileSet.tileSize, building.y * tileSet.tileSize, tileSet.tileSize, tileSet.tileSize);
         }
 
-        tetris.render(this, batch);
+
 
     }
 
@@ -223,18 +223,12 @@ public class TileMap {
             setWall(x + i, y - castleRadius);
         }
 
-        // TODO this is debug
-        for (int i = 0; i < 3; i++){
-            for (int j = 0; j < 3; j++){
-                setWall(x + castleRadius + i, y + j);
-            }
-        }
 
-
-        setTower(x - 1, y - 1);
-        setTower(x + 1, y - 1);
-        setTower(x - 1, y + 1);
-        setTower(x + 1, y + 1);
+//
+//        setTower(x - 1, y - 1);
+//        setTower(x + 1, y - 1);
+//        setTower(x - 1, y + 1);
+//        setTower(x + 1, y + 1);
     }
 
 
