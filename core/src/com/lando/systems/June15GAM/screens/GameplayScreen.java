@@ -219,20 +219,31 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     @Override
     public boolean tap(float x, float y, int count, int button) {
         if (button == 0) {
-            final float tile_size = tileMap.tileSet.tileSize;
-            final Vector2 towerPos = new Vector2();
-            for (Tower tower : tileMap.getTowers()) {
-                if (tower.canFire()) {
-                    tower.fire();
-                    towerPos.set(tower.x * tile_size + tile_size * 0.5f, tower.y * tile_size + tile_size * 0.5f);
-                    Cannonball cannonball = cannonballPool.obtain();
-                    cannonball.init(towerPos.x, towerPos.y, mouseWorldPos.x, mouseWorldPos.y);
-                    activeCannonballs.add(cannonball);
-                    break;
-                }
+            switch (phase) {
+                case BUILD:  tapBuild();  break;
+                case ATTACK: tapAttack();  break;
             }
         }
         return false;
+    }
+
+    private void tapBuild(){
+
+    }
+
+    private void tapAttack(){
+        final float tile_size = tileMap.tileSet.tileSize;
+        final Vector2 towerPos = new Vector2();
+        for (Tower tower : tileMap.getTowers()) {
+            if (tower.canFire()) {
+                tower.fire();
+                towerPos.set(tower.x * tile_size + tile_size * 0.5f, tower.y * tile_size + tile_size * 0.5f);
+                Cannonball cannonball = cannonballPool.obtain();
+                cannonball.init(towerPos.x, towerPos.y, mouseWorldPos.x, mouseWorldPos.y);
+                activeCannonballs.add(cannonball);
+                break;
+            }
+        }
     }
 
     @Override
