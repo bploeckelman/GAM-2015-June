@@ -23,6 +23,8 @@ import com.lando.systems.June15GAM.effects.EffectsManager;
 import com.lando.systems.June15GAM.effects.ExplosionWater;
 import com.lando.systems.June15GAM.enemies.Ship;
 import com.lando.systems.June15GAM.tilemap.TileMap;
+import com.lando.systems.June15GAM.tilemap.TileSet;
+import com.lando.systems.June15GAM.tilemap.TileSetOverhead;
 import com.lando.systems.June15GAM.tilemap.TileType;
 import com.lando.systems.June15GAM.wallpiece.WallPiece;
 import com.lando.systems.June15GAM.weapons.Cannonball;
@@ -84,10 +86,10 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         phase = Gameplay.BUILD;
         turn = 0;
 
-        // TODO: tilesize should come from tileset which is loaded in the tilemap, figure out a better way
-        final float TILE_SIZE = 16;
-        tileMap = new TileMap((int) (camera.viewportWidth  / TILE_SIZE),
-                              (int) (camera.viewportHeight / TILE_SIZE));
+        final TileSet tileSet = new TileSetOverhead();
+        tileMap = new TileMap(tileSet,
+                              (int) (camera.viewportWidth  / tileSet.tileSize),
+                              (int) (camera.viewportHeight / tileSet.tileSize));
 
         // TODO: generate ships randomly from water edges?
         ship = new Ship(2000, 2000);

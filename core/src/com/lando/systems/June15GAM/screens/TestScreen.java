@@ -16,6 +16,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.cameras.OrthoCamController;
 import com.lando.systems.June15GAM.tilemap.TileMap;
+import com.lando.systems.June15GAM.tilemap.TileSet;
+import com.lando.systems.June15GAM.tilemap.TileSetOverhead;
 
 /**
  * Brian Ploeckelman created on 5/10/2015.
@@ -49,7 +51,8 @@ public class TestScreen extends ScreenAdapter {
         screenCamera.update();
         camController = new OrthoCamController(camera);
 
-        tileMap = new TileMap(50, 50);
+        final TileSet tileSet = new TileSetOverhead();
+        tileMap = new TileMap(tileSet, 50, 50);
 
         userInterface = new UserInterface();
         userInterface.tileSet = tileMap.tileSet;

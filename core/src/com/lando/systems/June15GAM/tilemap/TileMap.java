@@ -27,7 +27,8 @@ public class TileMap {
 
 
 
-    public TileMap(int xTiles, int yTiles) {
+    public TileMap(TileSet tileSet, int xTiles, int yTiles) {
+        this.tileSet = tileSet;
         tetris = new WallPiece();
         gameLost = false;
         buildings = new HashMap<Integer, Building>();
