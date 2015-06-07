@@ -21,14 +21,12 @@ import com.lando.systems.June15GAM.Assets;
 import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.buildings.CannonPlacer;
 import com.lando.systems.June15GAM.buildings.Tower;
+import com.lando.systems.June15GAM.buildings.Wall;
 import com.lando.systems.June15GAM.effects.Effect;
 import com.lando.systems.June15GAM.effects.EffectsManager;
 import com.lando.systems.June15GAM.effects.ExplosionWater;
 import com.lando.systems.June15GAM.enemies.Ship;
-import com.lando.systems.June15GAM.tilemap.TileMap;
-import com.lando.systems.June15GAM.tilemap.TileSet;
-import com.lando.systems.June15GAM.tilemap.TileSetOverhead;
-import com.lando.systems.June15GAM.tilemap.TileType;
+import com.lando.systems.June15GAM.tilemap.*;
 import com.lando.systems.June15GAM.wallpiece.WallPiece;
 import com.lando.systems.June15GAM.weapons.Cannonball;
 
@@ -243,16 +241,34 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
         for (Ship ship : ships) {
             ship.update(delta);
+
+            // Handle ship movement
             if (ship.reachedTarget()) {
                 // TODO: pick new water tile target (reachable from current location) move this stuff into ship? or move ships into tilemap?
                 final float tile_size = tileMap.tileSet.tileSize;
                 final float map_width = tileMap.tiles[0].length * tile_size;
                 final float map_height = tileMap.tiles.length * tile_size;
+
                 ship.moveTarget.set(
                         MathUtils.random(tile_size, map_width - tile_size),
                         MathUtils.random(map_height * 2f / 3f + tile_size, map_height - tile_size));
                 ship.velocity.set(ship.moveTarget.x - ship.position.x, ship.moveTarget.y - ship.position.y);
                 ship.velocity.nor().scl(Ship.SPEED);
+            }
+
+            // Handle ship shooting
+            if (ship.canShoot()) {
+                ship.shoot();
+
+                final int wallIndex = MathUtils.random(0, tileMap.getWalls().size() - 1);
+                final Wall wall = tileMap.getWalls().get(wallIndex);
+                final float wallX = wall.x * tileMap.tileSet.tileSize + tileMap.tileSet.tileSize / 2f;
+                final float wallY = wall.y * tileMap.tileSet.tileSize + tileMap.tileSet.tileSize / 2f;
+
+                Cannonball cannonball = cannonballPool.obtain();
+                cannonball.init(ship.position.x, ship.position.y, wallX, wallY);
+                cannonball.source = Cannonball.Source.SHIP;
+                activeCannonballs.add(cannonball);
             }
         }
 
@@ -267,17 +283,20 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             if (cannonball.position.epsilonEquals(cannonball.target, tileMap.tileSet.tileSize / 2f)) {
                 final int tx = (int) (cannonball.position.x / tileMap.tileSet.tileSize);
                 final int ty = (int) (cannonball.position.y / tileMap.tileSet.tileSize);
-                TileType tileType = tileMap.getTileType(tx, ty);
-                if (tileType == null) tileType = TileType.GROUND;
-                final Effect.Type effectType = tileType == TileType.GROUND ? Effect.Type.EXPLOSION_GROUND : Effect.Type.EXPLOSION_WATER;
+                // TODO: differnt explosion for walls
+                final Effect.Type effectType = Effect.Type.EXPLOSION_GROUND;
                 effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
 
                 cannonballPool.free(cannonball);
                 activeCannonballs.removeIndex(i);
+
+                tileMap.tiles[ty][tx].type = TileType.GROUND;
+                tileMap.tiles[ty][tx].texture = TileTexture.GROUND_SAND;
             } else {
                 for (int s = ships.size - 1; s >= 0; --s) {
                     final Ship ship = ships.get(s);
-                    if (cannonball.position.epsilonEquals(ship.position, tileMap.tileSet.tileSize / 2f)) {
+                    if (cannonball.source == Cannonball.Source.TOWER &&
+                        cannonball.position.epsilonEquals(ship.position, tileMap.tileSet.tileSize / 2f)) {
                         final int tx = (int) (cannonball.position.x / tileMap.tileSet.tileSize);
                         final int ty = (int) (cannonball.position.y / tileMap.tileSet.tileSize);
                         TileType tileType = tileMap.getTileType(tx, ty);
@@ -392,6 +411,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 towerPos.set(tower.x * tile_size + tile_size * 0.5f, tower.y * tile_size + tile_size * 0.5f);
                 Cannonball cannonball = cannonballPool.obtain();
                 cannonball.init(towerPos.x, towerPos.y, mouseWorldPos.x, mouseWorldPos.y);
+                cannonball.source = Cannonball.Source.TOWER;
                 activeCannonballs.add(cannonball);
                 break;
             }

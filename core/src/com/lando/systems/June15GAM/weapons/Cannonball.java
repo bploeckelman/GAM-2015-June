@@ -16,8 +16,10 @@ import com.lando.systems.June15GAM.June15GAM;
  */
 public class Cannonball implements Pool.Poolable {
 
+    public enum Source { UNKNOWN, TOWER, SHIP }
+
     public static final float SPEED = 128f;
-    public static final float MAX_SIZE = 128f;
+    public static final float MAX_SIZE = 75f;
     public static final float MIN_SIZE = 32f;
 
     public TextureRegion texture;
@@ -26,6 +28,7 @@ public class Cannonball implements Pool.Poolable {
     public Vector2       velocity;
     public MutableFloat  size;
     public boolean       alive;
+    public Source        source;
 
     public Cannonball() {
         texture = new TextureRegion(Assets.weaponRegions[0][0]);
@@ -34,6 +37,7 @@ public class Cannonball implements Pool.Poolable {
         target = new Vector2();
         size = new MutableFloat(MIN_SIZE);
         alive = false;
+        source = Source.UNKNOWN;
     }
 
     public void init(float x, float y, float tx, float ty) {

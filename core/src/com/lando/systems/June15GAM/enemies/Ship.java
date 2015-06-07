@@ -13,10 +13,12 @@ public class Ship {
 
     public static final float FRAME_DURATION = 0.2f;
     public static final float SPEED = 32f;
+    public static final float SHOT_COOLDOWN = 2f;
 
     // TODO: different animations for different direction
     public Animation animation;
     public float     animTimer;
+    public float     shotTimer;
     public Vector2   position;
     public Vector2   velocity;
     public Vector2   size;
@@ -35,6 +37,7 @@ public class Ship {
         this.size = new Vector2(w, h);
         this.moveTarget = new Vector2(x, y);
         this.shotTarget = new Vector2(0, 0);
+        this.animTimer = 0;
 
         targetTexture = Assets.effectsRegions[1][2];
     }
@@ -42,6 +45,11 @@ public class Ship {
     // TODO: collision checking and resolution
 
     public void update(float delta) {
+        shotTimer += delta;
+        if (shotTimer > SHOT_COOLDOWN) {
+            shotTimer = SHOT_COOLDOWN;
+        }
+
         // TODO: switch animations based on movement direction
         animTimer += delta;
         position.add(velocity.x * delta, velocity.y * delta);
@@ -56,6 +64,14 @@ public class Ship {
 
     public boolean reachedTarget() {
         return (position.epsilonEquals(moveTarget, (size.x + size.y) / 4f));
+    }
+
+    public boolean canShoot() {
+        return shotTimer >= SHOT_COOLDOWN;
+    }
+
+    public void shoot() {
+        shotTimer = 0f;
     }
 
 }
