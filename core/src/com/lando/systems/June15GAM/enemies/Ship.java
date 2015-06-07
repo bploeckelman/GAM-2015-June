@@ -3,8 +3,14 @@ package com.lando.systems.June15GAM.enemies;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.lando.systems.June15GAM.Assets;
+import com.lando.systems.June15GAM.buildings.Wall;
+import com.lando.systems.June15GAM.tilemap.TileMap;
+import com.lando.systems.June15GAM.weapons.Cannonball;
 
 /**
  * Brian Ploeckelman created on 5/19/2015.
@@ -66,12 +72,39 @@ public class Ship {
         return (position.epsilonEquals(moveTarget, (size.x + size.y) / 4f));
     }
 
+    public void setNewTarget(TileMap tileMap) {
+        // TODO: pick new water tile target (reachable from current location) move this stuff into ship? or move ships into tilemap?
+        final float tile_size = tileMap.tileSet.tileSize;
+        final float map_width = tileMap.tiles[0].length * tile_size;
+        final float map_height = tileMap.tiles.length * tile_size;
+
+        final float minX = tile_size;
+        final float maxX = map_width - tile_size;
+        final float minY = map_height * 2f / 3f + tile_size;
+        final float maxY = map_height - tile_size;
+
+        moveTarget.set(MathUtils.random(minX, minY), MathUtils.random(minY, maxY));
+
+        velocity.set(moveTarget.x - position.x, moveTarget.y - position.y);
+        velocity.nor().scl(SPEED);
+    }
+
     public boolean canShoot() {
         return shotTimer >= SHOT_COOLDOWN;
     }
 
-    public void shoot() {
+    public void shoot(TileMap tileMap, Pool<Cannonball> cannonballPool, Array<Cannonball> activeCannonballs) {
         shotTimer = 0f;
+
+        final int wallIndex = MathUtils.random(0, tileMap.getWalls().size() - 1);
+        final Wall wall = tileMap.getWalls().get(wallIndex);
+        final float wallX = wall.x * tileMap.tileSet.tileSize + tileMap.tileSet.tileSize / 2f;
+        final float wallY = wall.y * tileMap.tileSet.tileSize + tileMap.tileSet.tileSize / 2f;
+
+        Cannonball cannonball = cannonballPool.obtain();
+        cannonball.init(position.x, position.y, wallX, wallY);
+        cannonball.source = Cannonball.Source.SHIP;
+        activeCannonballs.add(cannonball);
     }
 
 }

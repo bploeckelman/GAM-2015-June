@@ -239,43 +239,25 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     private void updateAttack(float delta) {
 
+        // Update ships
         for (Ship ship : ships) {
             ship.update(delta);
 
-            // Handle ship movement
             if (ship.reachedTarget()) {
-                // TODO: pick new water tile target (reachable from current location) move this stuff into ship? or move ships into tilemap?
-                final float tile_size = tileMap.tileSet.tileSize;
-                final float map_width = tileMap.tiles[0].length * tile_size;
-                final float map_height = tileMap.tiles.length * tile_size;
-
-                ship.moveTarget.set(
-                        MathUtils.random(tile_size, map_width - tile_size),
-                        MathUtils.random(map_height * 2f / 3f + tile_size, map_height - tile_size));
-                ship.velocity.set(ship.moveTarget.x - ship.position.x, ship.moveTarget.y - ship.position.y);
-                ship.velocity.nor().scl(Ship.SPEED);
+                ship.setNewTarget(tileMap);
             }
 
-            // Handle ship shooting
             if (ship.canShoot()) {
-                ship.shoot();
-
-                final int wallIndex = MathUtils.random(0, tileMap.getWalls().size() - 1);
-                final Wall wall = tileMap.getWalls().get(wallIndex);
-                final float wallX = wall.x * tileMap.tileSet.tileSize + tileMap.tileSet.tileSize / 2f;
-                final float wallY = wall.y * tileMap.tileSet.tileSize + tileMap.tileSet.tileSize / 2f;
-
-                Cannonball cannonball = cannonballPool.obtain();
-                cannonball.init(ship.position.x, ship.position.y, wallX, wallY);
-                cannonball.source = Cannonball.Source.SHIP;
-                activeCannonballs.add(cannonball);
+                ship.shoot(tileMap, cannonballPool, activeCannonballs);
             }
         }
 
+        // Update towers
         for (Tower tower : tileMap.getTowers()) {
             tower.update(delta);
         }
 
+        // Update cannonballs and handle collisions
         // TODO: clean this stuff up
         for (int i = activeCannonballs.size - 1; i >= 0; --i) {
             Cannonball cannonball = activeCannonballs.get(i);
@@ -313,6 +295,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 }
             }
         }
+
+        // Update gameplay phase
         if (phaseTimer <= 0 && activeCannonballs.size == 0){
             phase = Gameplay.BUILD;
             phaseTimer = buildTimer;
