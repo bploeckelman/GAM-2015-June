@@ -75,15 +75,15 @@ public class Ship {
     public void setNewTarget(TileMap tileMap) {
         // TODO: pick new water tile target (reachable from current location) move this stuff into ship? or move ships into tilemap?
         final float tile_size = tileMap.tileSet.tileSize;
-        final float map_width = tileMap.tiles[0].length * tile_size;
-        final float map_height = tileMap.tiles.length * tile_size;
+        final float map_width = tileMap.tiles[0].length;
+        final float map_height = tileMap.tiles.length;
 
-        final float minX = tile_size;
-        final float maxX = map_width - tile_size;
-        final float minY = map_height * 2f / 3f + tile_size;
-        final float maxY = map_height - tile_size;
+        final float minX = 1;
+        final float maxX = map_width - 1;
+        final float minY = map_height * 2f / 3f + 1;
+        final float maxY = map_height - 1;
 
-        moveTarget.set(MathUtils.random(minX, minY), MathUtils.random(minY, maxY));
+        moveTarget.set(MathUtils.random(minX, minY) * tile_size, MathUtils.random(minY, maxY) * tile_size);
 
         velocity.set(moveTarget.x - position.x, moveTarget.y - position.y);
         velocity.nor().scl(SPEED);
