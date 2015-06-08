@@ -106,7 +106,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
         // NOTE: for now, assume that the north edge of the screen is always a body of water, spawn from any tile along that edge
         // TODO: generate spawn points on the tilemap and randomly pick from those when spawning
-        final int NUM_SHIPS = 10;
+        final int NUM_SHIPS = 1;
         ships = new Array<Ship>();
         for (int i = 0; i < NUM_SHIPS; ++i) {
             int tx = MathUtils.random(1, tileMap.tiles[0].length - 2);
@@ -257,43 +257,56 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             tower.update(delta);
         }
 
-        // Update cannonballs and handle collisions
-        // TODO: clean this stuff up
-        for (int i = activeCannonballs.size - 1; i >= 0; --i) {
-            Cannonball cannonball = activeCannonballs.get(i);
+        // Update cannonballs
+        for (Cannonball cannonball : activeCannonballs) {
             cannonball.update(delta);
-            if (cannonball.position.epsilonEquals(cannonball.target, tileMap.tileSet.tileSize / 2f)) {
-                final int tx = (int) (cannonball.position.x / tileMap.tileSet.tileSize);
-                final int ty = (int) (cannonball.position.y / tileMap.tileSet.tileSize);
-                // TODO: differnt explosion for walls
+        }
+
+        // Handle collisions
+        for (int i = activeCannonballs.size - 1; i >= 0; --i) {
+            final Cannonball cannonball = activeCannonballs.get(i);
+            // Only check the cannonball if it is alive and has reached its target
+            if (!cannonball.alive || cannonball.lifetime > 0) {
+                continue;
+            }
+
+            // Get the cannonballs tile position
+            final int tx = (int) ((cannonball.position.x + cannonball.size.floatValue() / 2f) / tileMap.tileSet.tileSize);
+            final int ty = (int) ((cannonball.position.y + cannonball.size.floatValue() / 2f) / tileMap.tileSet.tileSize);
+
+            // Have we hit the target yet?
+            // Act differently based on the source of the cannonball
+            if (cannonball.source == Cannonball.Source.SHIP) {
+                // TODO: different explosion for walls
                 final Effect.Type effectType = Effect.Type.EXPLOSION_GROUND;
                 effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
 
-                cannonballPool.free(cannonball);
-                activeCannonballs.removeIndex(i);
+                tileMap.destroyBuildingAt(tx, ty);
 
                 tileMap.tiles[ty][tx].type = TileType.GROUND;
                 tileMap.tiles[ty][tx].texture = TileTexture.GROUND_SAND;
-            } else {
+            }
+            else if (cannonball.source == Cannonball.Source.TOWER) {
+                // Check for ship collisions
                 for (int s = ships.size - 1; s >= 0; --s) {
                     final Ship ship = ships.get(s);
-                    if (cannonball.source == Cannonball.Source.TOWER &&
-                        cannonball.position.epsilonEquals(ship.position, tileMap.tileSet.tileSize / 2f)) {
-                        final int tx = (int) (cannonball.position.x / tileMap.tileSet.tileSize);
-                        final int ty = (int) (cannonball.position.y / tileMap.tileSet.tileSize);
+                    if (cannonball.position.epsilonEquals(ship.position, tileMap.tileSet.tileSize / 2f)) {
+
                         TileType tileType = tileMap.getTileType(tx, ty);
-                        if (tileType == null) tileType = TileType.GROUND;
+                        if (tileType == null) tileType = TileType.WATER;
+
                         final Effect.Type effectType = tileType == TileType.GROUND ? Effect.Type.EXPLOSION_GROUND : Effect.Type.EXPLOSION_WATER;
                         effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
-
-                        cannonballPool.free(cannonball);
-                        activeCannonballs.removeIndex(i);
 
                         // TODO: moar kaboom
                         ships.removeIndex(s);
                     }
                 }
             }
+
+            // Remove the cannonball
+            cannonballPool.free(cannonball);
+            activeCannonballs.removeIndex(i);
         }
 
         // Update gameplay phase
