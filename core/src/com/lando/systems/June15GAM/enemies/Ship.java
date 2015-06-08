@@ -98,8 +98,8 @@ public class Ship {
 
         final int wallIndex = MathUtils.random(0, tileMap.getWalls().size() - 1);
         final Wall wall = tileMap.getWalls().get(wallIndex);
-        final float wallX = wall.x * tileMap.tileSet.tileSize + tileMap.tileSet.tileSize / 2f;
-        final float wallY = wall.y * tileMap.tileSet.tileSize + tileMap.tileSet.tileSize / 2f;
+        final float wallX = wall.x * tileMap.tileSet.tileSize - tileMap.tileSet.tileSize / 2f;
+        final float wallY = wall.y * tileMap.tileSet.tileSize - tileMap.tileSet.tileSize / 2f;
 
         Cannonball cannonball = cannonballPool.obtain();
         cannonball.init(position.x, position.y, wallX, wallY);
