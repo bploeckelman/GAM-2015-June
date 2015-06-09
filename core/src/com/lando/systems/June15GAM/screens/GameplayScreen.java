@@ -346,11 +346,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                     final Ship ship = ships.get(s);
                     if (cannonball.position.epsilonEquals(ship.position, tileMap.tileSet.tileSize / 2f)) {
                         shipGotHit = true;
-
-                        effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
-
                         // TODO: moar kaboom
                         ships.removeIndex(s);
+                        effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
                     }
                 }
 
@@ -372,13 +370,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                                  TileType hitTileType,
                                  Effect.Type effectType) {
         tileMap.destroyBuildingAt(tileHitX, tileHitY);
-
-        effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
-
         if (hitTileType != TileType.WATER) {
             tileMap.tiles[tileHitY][tileHitX].type = TileType.GROUND;
             tileMap.tiles[tileHitY][tileHitX].texture = TileTexture.GROUND_SAND;
         }
+        effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
     }
 
     // ------------------------------------------------------------------------
@@ -425,7 +421,6 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     }
 
     private void tapAttack(){
-
         final float tile_size = tileMap.tileSet.tileSize;
         final Vector2 towerPos = new Vector2();
         for (Tower tower : tileMap.getTowers()) {
@@ -433,7 +428,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 tower.fire();
                 towerPos.set(tower.x * tile_size + tile_size * 0.5f, tower.y * tile_size + tile_size * 0.5f);
                 Cannonball cannonball = cannonballPool.obtain();
-                cannonball.init(towerPos.x, towerPos.y, mouseWorldPos.x, mouseWorldPos.y);
+                cannonball.init(towerPos.x, towerPos.y, mouseWorldPos.x - tile_size, mouseWorldPos.y - tile_size);
                 cannonball.source = Cannonball.Source.TOWER;
                 activeCannonballs.add(cannonball);
                 break;
