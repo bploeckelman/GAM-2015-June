@@ -21,10 +21,8 @@ import com.lando.systems.June15GAM.Assets;
 import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.buildings.CannonPlacer;
 import com.lando.systems.June15GAM.buildings.Tower;
-import com.lando.systems.June15GAM.buildings.Wall;
 import com.lando.systems.June15GAM.effects.Effect;
 import com.lando.systems.June15GAM.effects.EffectsManager;
-import com.lando.systems.June15GAM.effects.ExplosionWater;
 import com.lando.systems.June15GAM.enemies.Ship;
 import com.lando.systems.June15GAM.tilemap.*;
 import com.lando.systems.June15GAM.wallpiece.WallPiece;
@@ -56,8 +54,6 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     final float        buildTimer = 15;
     final float        phaseEntryDelayTime = 1;
     GlyphLayout layout = new GlyphLayout();
-
-
 
     public enum Gameplay {
         BUILD,
@@ -193,20 +189,18 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.exit();
         }
+
         if (phaseActive){
             phaseTimer -= delta;
-
             switch (phase) {
-                case BUILD:  updateBuild(delta);  break;
-                case CANNON: updateCannon(delta); break;
-                case ATTACK: updateAttack(delta); break;
+                case BUILD:  updateBuildPhase(delta);  break;
+                case CANNON: updateCannonPhase(delta); break;
+                case ATTACK: updateAttackPhase(delta); break;
             }
         } else {
             phaseEntryTimer -= delta;
             if (phaseEntryTimer <= 0) phaseActive = true;
         }
-
-
 
         effectsManager.update(delta);
 
@@ -214,9 +208,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         updateMouseVectors(camera);
     }
 
-
-
-    private void updateBuild(float delta) {
+    private void updateBuildPhase(float delta) {
         // TODO: switch to attack phase based on some condition (timer? done placing wall sections?)
         if (phaseTimer <= 0){
             phase = Gameplay.CANNON;
@@ -225,54 +217,12 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             phaseEntryTimer = phaseEntryDelayTime;
             tileMap.tetris = new CannonPlacer(3); // TODO: This should be based on something
         }
-
     }
 
-    private void updateCannon(float delta){
-        if (phaseTimer <= 0 || tileMap.tetris.getNumberLeft() <= 0){
-            phase = Gameplay.ATTACK;
-            phaseTimer = attackTimer;
-            phaseActive = false;
-            phaseEntryTimer = phaseEntryDelayTime;
-        }
-    }
-
-    private void updateAttack(float delta) {
-        // Update ships
-        for (Ship ship : ships) {
-            ship.update(delta);
-
-            if (ship.reachedTarget()) {
-                ship.setNewTarget(tileMap);
-            }
-
-            if (ship.canShoot()) {
-                ship.shoot(tileMap, cannonballPool, activeCannonballs);
-            }
-        }
-
-        // Update towers
-        for (Tower tower : tileMap.getTowers()) {
-            tower.update(delta);
-        }
-
-        // Update cannonballs
-        for (Cannonball cannonball : activeCannonballs) {
-            cannonball.update(delta);
-        }
-
-        // Handle collisions
+    private void updateAttackPhase(float delta) {
+        updateScene(delta);
         handleCollisions();
-
-        // Update gameplay phase
-        if (phaseTimer <= 0 && activeCannonballs.size == 0){
-            phase = Gameplay.BUILD;
-            phaseTimer = buildTimer;
-            phaseActive = false;
-            phaseEntryTimer = phaseEntryDelayTime;
-            turn++;
-            tileMap.tetris = new WallPiece();
-        }
+        updateGamePhase();
     }
 
     @Override
@@ -308,6 +258,52 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         mouseScreenPos.set(mx, my, 0);
         mouseWorldPos.set(mx, my, 0);
         camera.unproject(mouseWorldPos);
+    }
+
+    private void updateCannonPhase(float delta){
+        if (phaseTimer <= 0 || tileMap.tetris.getNumberLeft() <= 0){
+            phase = Gameplay.ATTACK;
+            phaseTimer = attackTimer;
+            phaseActive = false;
+            phaseEntryTimer = phaseEntryDelayTime;
+        }
+    }
+
+    private void updateScene(float delta) {
+        // Update ships
+        for (Ship ship : ships) {
+            ship.update(delta);
+
+            if (ship.reachedTarget()) {
+                ship.setNewTarget(tileMap);
+            }
+
+            if (ship.canShoot()) {
+                ship.shoot(tileMap, cannonballPool, activeCannonballs);
+            }
+        }
+
+        // Update towers
+        for (Tower tower : tileMap.getTowers()) {
+            tower.update(delta);
+        }
+
+        // Update cannonballs
+        for (Cannonball cannonball : activeCannonballs) {
+            cannonball.update(delta);
+        }
+    }
+
+    private void updateGamePhase() {
+        // Update gameplay phase
+        if (phaseTimer <= 0 && activeCannonballs.size == 0){
+            phase = Gameplay.BUILD;
+            phaseTimer = buildTimer;
+            phaseActive = false;
+            phaseEntryTimer = phaseEntryDelayTime;
+            turn++;
+            tileMap.tetris = new WallPiece();
+        }
     }
 
     private void handleCollisions() {
@@ -471,9 +467,5 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
         return false;
     }
-
-
-
-
 
 }
