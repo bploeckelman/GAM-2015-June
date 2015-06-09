@@ -19,7 +19,7 @@ public class Cannonball implements Pool.Poolable {
     public enum Source { UNKNOWN, TOWER, SHIP }
 
     public static final float SPEED = 128f;
-    public static final float MAX_SIZE = 75f;
+    public static final float MAX_SIZE = 50;
     public static final float MIN_SIZE = 32f;
 
     public TextureRegion texture;
@@ -28,7 +28,6 @@ public class Cannonball implements Pool.Poolable {
     public Vector2       velocity;
     public MutableFloat  size;
     public boolean       alive;
-    public float         lifetime;
     public Source        source;
 
     public Cannonball() {
@@ -38,7 +37,6 @@ public class Cannonball implements Pool.Poolable {
         target = new Vector2();
         size = new MutableFloat(MIN_SIZE);
         alive = false;
-        lifetime = 0;
         source = Source.UNKNOWN;
     }
 
@@ -51,7 +49,7 @@ public class Cannonball implements Pool.Poolable {
         alive = true;
 
         final Vector2 dist = new Vector2(tx - x, ty - y);
-        lifetime = dist.len() / (2f * velocity.len());
+        final float lifetime = dist.len() / (2f * velocity.len());
         Tween.to(size, -1, lifetime)
              .target(MAX_SIZE)
              .ease(Sine.INOUT)
@@ -67,10 +65,6 @@ public class Cannonball implements Pool.Poolable {
     }
 
     public void update(float delta) {
-        lifetime -= delta;
-        if (lifetime < 0f) {
-            lifetime = 0f;
-        }
         position.add(velocity.x * delta, velocity.y * delta);
     }
 

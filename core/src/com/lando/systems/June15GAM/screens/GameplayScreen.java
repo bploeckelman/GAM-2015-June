@@ -238,7 +238,6 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     }
 
     private void updateAttack(float delta) {
-
         // Update ships
         for (Ship ship : ships) {
             ship.update(delta);
@@ -263,51 +262,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         }
 
         // Handle collisions
-        for (int i = activeCannonballs.size - 1; i >= 0; --i) {
-            final Cannonball cannonball = activeCannonballs.get(i);
-            // Only check the cannonball if it is alive and has reached its target
-            if (!cannonball.alive || cannonball.lifetime > 0) {
-                continue;
-            }
-
-            // Get the cannonballs tile position
-            final int tx = (int) ((cannonball.position.x + cannonball.size.floatValue() / 2f) / tileMap.tileSet.tileSize);
-            final int ty = (int) ((cannonball.position.y + cannonball.size.floatValue() / 2f) / tileMap.tileSet.tileSize);
-
-            // Have we hit the target yet?
-            // Act differently based on the source of the cannonball
-            if (cannonball.source == Cannonball.Source.SHIP) {
-                // TODO: different explosion for walls
-                final Effect.Type effectType = Effect.Type.EXPLOSION_GROUND;
-                effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
-
-                tileMap.destroyBuildingAt(tx, ty);
-
-                tileMap.tiles[ty][tx].type = TileType.GROUND;
-                tileMap.tiles[ty][tx].texture = TileTexture.GROUND_SAND;
-            }
-            else if (cannonball.source == Cannonball.Source.TOWER) {
-                // Check for ship collisions
-                for (int s = ships.size - 1; s >= 0; --s) {
-                    final Ship ship = ships.get(s);
-                    if (cannonball.position.epsilonEquals(ship.position, tileMap.tileSet.tileSize / 2f)) {
-
-                        TileType tileType = tileMap.getTileType(tx, ty);
-                        if (tileType == null) tileType = TileType.WATER;
-
-                        final Effect.Type effectType = tileType == TileType.GROUND ? Effect.Type.EXPLOSION_GROUND : Effect.Type.EXPLOSION_WATER;
-                        effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
-
-                        // TODO: moar kaboom
-                        ships.removeIndex(s);
-                    }
-                }
-            }
-
-            // Remove the cannonball
-            cannonballPool.free(cannonball);
-            activeCannonballs.removeIndex(i);
-        }
+        handleCollisions();
 
         // Update gameplay phase
         if (phaseTimer <= 0 && activeCannonballs.size == 0){
@@ -353,6 +308,77 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         mouseScreenPos.set(mx, my, 0);
         mouseWorldPos.set(mx, my, 0);
         camera.unproject(mouseWorldPos);
+    }
+
+    private void handleCollisions() {
+        for (int i = activeCannonballs.size - 1; i >= 0; --i) {
+            final Cannonball cannonball = activeCannonballs.get(i);
+            // Only check the cannonball if it is alive and has reached its target
+            if (!cannonball.alive || !cannonball.position.epsilonEquals(cannonball.target, tileMap.tileSet.tileSize / 4f)) {
+                continue;
+            }
+
+            // Get the cannonballs tile position
+            final int tx = (int) ((cannonball.position.x + cannonball.size.floatValue() / 2f) / tileMap.tileSet.tileSize);
+            final int ty = (int) ((cannonball.position.y + cannonball.size.floatValue() / 2f) / tileMap.tileSet.tileSize);
+
+            TileType hitTileType = tileMap.getTileType(tx, ty);
+            if (hitTileType == null) {
+                hitTileType = TileType.WATER;
+            }
+
+            // TODO: add different effect types for walls and towers and such
+            Effect.Type effectType;
+            if (hitTileType == TileType.GROUND) {
+                effectType = Effect.Type.EXPLOSION_GROUND;
+            } else {
+                effectType = Effect.Type.EXPLOSION_WATER;
+            }
+
+            // Act differently based on the source of the cannonball
+            if (cannonball.source == Cannonball.Source.SHIP) {
+                handleGroundHit(cannonball, tx, ty, hitTileType, effectType);
+            }
+            else if (cannonball.source == Cannonball.Source.TOWER) {
+                // Check for ship collisions
+                boolean shipGotHit = false;
+                for (int s = ships.size - 1; s >= 0; --s) {
+                    final Ship ship = ships.get(s);
+                    if (cannonball.position.epsilonEquals(ship.position, tileMap.tileSet.tileSize / 2f)) {
+                        shipGotHit = true;
+
+                        effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
+
+                        // TODO: moar kaboom
+                        ships.removeIndex(s);
+                    }
+                }
+
+                // Otherwise handle a ground collision
+                if (!shipGotHit) {
+                    handleGroundHit(cannonball, tx, ty, hitTileType, effectType);
+                }
+            }
+
+            // Remove the cannonball
+            cannonballPool.free(cannonball);
+            activeCannonballs.removeIndex(i);
+        }
+    }
+
+    private void handleGroundHit(Cannonball cannonball,
+                                 int tileHitX,
+                                 int tileHitY,
+                                 TileType hitTileType,
+                                 Effect.Type effectType) {
+        tileMap.destroyBuildingAt(tileHitX, tileHitY);
+
+        effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
+
+        if (hitTileType != TileType.WATER) {
+            tileMap.tiles[tileHitY][tileHitX].type = TileType.GROUND;
+            tileMap.tiles[tileHitY][tileHitX].texture = TileTexture.GROUND_SAND;
+        }
     }
 
     // ------------------------------------------------------------------------
