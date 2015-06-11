@@ -96,7 +96,10 @@ public class Ship {
     public void shoot(TileMap tileMap, Pool<Cannonball> cannonballPool, Array<Cannonball> activeCannonballs) {
         shotTimer = 0f;
 
-        final int wallIndex = MathUtils.random(0, tileMap.getWalls().size() - 1);
+        final int numWalls = tileMap.getWalls().size();
+        if (numWalls == 0) return;
+
+        final int wallIndex = MathUtils.random(0, numWalls - 1);
         final Wall wall = tileMap.getWalls().get(wallIndex);
         final float wallX = wall.x * tileMap.tileSet.tileSize - tileMap.tileSet.tileSize / 2f;
         final float wallY = wall.y * tileMap.tileSet.tileSize - tileMap.tileSet.tileSize / 2f;
