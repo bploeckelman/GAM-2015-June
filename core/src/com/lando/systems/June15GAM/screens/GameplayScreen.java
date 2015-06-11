@@ -52,7 +52,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     float              phaseEntryTimer;
     final float        cannonTimer = 15;
     final float        attackTimer = 30;
-    final float        buildTimer = 15;
+    final float        buildTimer = 25;
     final float        phaseEntryDelayTime = 1;
     final int          numShipsToAdd = 3;
     GlyphLayout layout = new GlyphLayout();
