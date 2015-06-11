@@ -46,6 +46,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     Rectangle          placeButtonRect;
     Rectangle          rotateButtonRect;
 
+    int                numShips;
     boolean            phaseActive;
     float              phaseTimer;
     float              phaseEntryTimer;
@@ -53,6 +54,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     final float        attackTimer = 30;
     final float        buildTimer = 15;
     final float        phaseEntryDelayTime = 1;
+    final int          numShipsToAdd = 3;
     GlyphLayout layout = new GlyphLayout();
 
     public enum Gameplay {
@@ -99,17 +101,6 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         tileMap = new TileMap(tileSet,
                               (int) (camera.viewportWidth  / tileSet.tileSize),
                               (int) (camera.viewportHeight / tileSet.tileSize));
-
-        // NOTE: for now, assume that the north edge of the screen is always a body of water, spawn from any tile along that edge
-        // TODO: generate spawn points on the tilemap and randomly pick from those when spawning
-        final int NUM_SHIPS = 1;
-        ships = new Array<Ship>();
-        for (int i = 0; i < NUM_SHIPS; ++i) {
-            int tx = MathUtils.random(1, tileMap.tiles[0].length - 2);
-            int ty = tileMap.tiles.length - 1;
-            Ship ship = new Ship(tx * tileSet.tileSize, ty * tileSet.tileSize, tileSet.tileSize, tileSet.tileSize);
-            ships.add(ship);
-        }
 
         activeCannonballs = new Array<Cannonball>(20);
         cannonballPool = Pools.get(Cannonball.class);
@@ -262,6 +253,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     private void updateCannonPhase(float delta){
         if (phaseTimer <= 0 || tileMap.tetris.getNumberLeft() <= 0){
+            spawnShips();
             phase = Gameplay.ATTACK;
             phaseTimer = attackTimer;
             phaseActive = false;
@@ -371,6 +363,26 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             tileMap.tiles[tileHitY][tileHitX].texture = TileTexture.GROUND_SAND;
         }
         effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
+    }
+
+    private void spawnShips() {
+        // NOTE: for now, assume that the north edge of the screen is always a body of water, spawn from any tile along that edge
+        // TODO: generate spawn points on the tilemap and randomly pick from those when spawning
+        if (ships == null) {
+            ships = new Array<Ship>();
+        } else {
+            ships.clear();
+        }
+
+        numShips += numShipsToAdd;
+
+        final float tile_size = tileMap.tileSet.tileSize;
+        for (int i = 0; i < numShips; ++i) {
+            int tx = MathUtils.random(1, tileMap.tiles[0].length - 2);
+            int ty = tileMap.tiles.length - 1;
+            Ship ship = new Ship(tx * tile_size, ty * tile_size, tile_size, tile_size);
+            ships.add(ship);
+        }
     }
 
     // ------------------------------------------------------------------------
