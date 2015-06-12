@@ -252,6 +252,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     }
 
     private void updateCannonPhase(float delta){
+        if (!tileMap.hasInternalTiles()) {
+            phaseTimer = 0;
+        }
         if (phaseTimer <= 0 || tileMap.tetris.getNumberLeft() <= 0){
             spawnShips();
             phase = Gameplay.ATTACK;

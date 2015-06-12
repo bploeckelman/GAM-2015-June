@@ -208,6 +208,18 @@ public class TileMap {
 
     }
 
+    // TODO: this could be made more efficient
+    public boolean hasInternalTiles() {
+        for (int y = 0; y < tiles.length; ++y) {
+            for (int x = 0; x < tiles[0].length; ++x) {
+                if (tiles[y][x].type == TileType.INTERIOR) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private boolean inBounds(int x, int y){
         return x >= 0 && x < width && y >= 0 && y < height;
     }
