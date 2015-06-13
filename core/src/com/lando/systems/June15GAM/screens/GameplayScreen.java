@@ -57,6 +57,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     final int          numShipsToAdd = 3;
     GlyphLayout layout = new GlyphLayout();
 
+    float              deviceScaleX;
+    float              deviceScaleY;
+
     public enum Gameplay {
         BUILD,
         CANNON,
@@ -112,6 +115,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
         placeButtonRect = new Rectangle(camera.viewportWidth - 94, 30, 64, 64 );
         rotateButtonRect = new Rectangle(camera.viewportWidth - 94, 124, 64, 64 );
+
+        deviceScaleX =  camera.viewportWidth / Gdx.graphics.getWidth();
+        deviceScaleY =  camera.viewportHeight / Gdx.graphics.getHeight();
     }
 
     @Override
@@ -462,8 +468,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         if (phase == Gameplay.ATTACK) return false;
         float panScale = 1;
         if (tileMap.tetris != null){
-            tileMap.tetris.addX(deltaX * panScale);
-            tileMap.tetris.addY(-deltaY * panScale);
+            tileMap.tetris.addX(deltaX * deviceScaleX * panScale);
+            tileMap.tetris.addY(-deltaY * deviceScaleY * panScale);
         }
         return true;
     }
