@@ -281,7 +281,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 ship.setNewTarget(tileMap);
             }
 
-            if (ship.canShoot()) {
+            if (ship.canShoot() && phaseTimer > 0f) {
                 ship.shoot(tileMap, cannonballPool, activeCannonballs);
             }
         }
@@ -453,11 +453,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             if (tower.canFire()) {
                 tower.fire();
                 Cannonball cannonball = cannonballPool.obtain();
-                cannonball.init(tower.x * tile_size + half_tile_size,
-                                tower.y * tile_size + half_tile_size,
+                cannonball.init(tower.x * tile_size + half_tile_size / 2f,
+                                tower.y * tile_size + half_tile_size / 2f,
                                 mouseWorldPos.x,
                                 mouseWorldPos.y,
-                                tile_size, tile_size,
+                                half_tile_size, half_tile_size,
                                 speed);
                 cannonball.source = Cannonball.Source.TOWER;
                 activeCannonballs.add(cannonball);

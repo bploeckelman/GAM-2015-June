@@ -103,14 +103,14 @@ public class Ship {
         final float half_tile_size = tile_size / 2f;
         final int wallIndex = MathUtils.random(0, numWalls - 1);
         final Wall wall = tileMap.getWalls().get(wallIndex);
-        final float speed = 50f;
+        final float speed = 40f;
 
         Cannonball cannonball = cannonballPool.obtain();
-        cannonball.init(position.x + half_tile_size,
-                        position.y + half_tile_size,
+        cannonball.init(position.x + half_tile_size / 2f,
+                        position.y + half_tile_size / 2f,
                         wall.x * tile_size + half_tile_size,
                         wall.y * tile_size + half_tile_size,
-                        tile_size, tile_size,
+                        half_tile_size, half_tile_size,
                         speed);
         cannonball.source = Cannonball.Source.SHIP;
         activeCannonballs.add(cannonball);

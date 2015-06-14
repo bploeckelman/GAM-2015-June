@@ -1,5 +1,6 @@
 package com.lando.systems.June15GAM.weapons;
 
+import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -21,6 +22,9 @@ public abstract class Projectile implements Pool.Poolable {
     public Vector2   velocity;
     public float     speed;
 
+    public MutableFloat tweenSizeX;
+    public MutableFloat tweenSizeY;
+
     public TextureRegion keyframe;
     public Animation     animation;
     public float         stateTime;
@@ -33,6 +37,8 @@ public abstract class Projectile implements Pool.Poolable {
         target = new Vector2();
         velocity = new Vector2();
         speed = 1f;
+        tweenSizeX = new MutableFloat(0f);
+        tweenSizeY = new MutableFloat(0f);
         animation = null; // NOTE: set in subclasses
         keyframe = Assets.defaultProjectileTexture;
         stateTime = 0f;
@@ -59,6 +65,8 @@ public abstract class Projectile implements Pool.Poolable {
         alive = false;
         stateTime = 0f;
         velocity.set(0f, 0f);
+        tweenSizeX.setValue(0f);
+        tweenSizeY.setValue(0f);
     }
 
     public void setTarget(float targetX, float targetY) {
@@ -82,6 +90,9 @@ public abstract class Projectile implements Pool.Poolable {
             stateTime += delta;
             keyframe = animation.getKeyFrame(stateTime);
         }
+
+        bounds.width = tweenSizeX.floatValue();
+        bounds.height = tweenSizeY.floatValue();
 
         // Move until target is hit, then stop
         if (!position.epsilonEquals(target, HIT_EPSILON)) {
