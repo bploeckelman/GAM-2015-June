@@ -440,6 +440,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     }
 
     private void tapAttack(){
+        // Disable attacking if phase is over
+        if (phaseTimer <= 0f) {
+            return;
+        }
+
         final float tile_size = tileMap.tileSet.tileSize;
         final float half_tile_size = tile_size / 2f;
         final float speed = 75f;
