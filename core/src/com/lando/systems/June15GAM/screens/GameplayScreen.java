@@ -299,7 +299,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     private void updateGamePhase() {
         // Update gameplay phase
-        if (phaseTimer <= 0 && activeCannonballs.size == 0){
+        if ((phaseTimer <= 0 && activeCannonballs.size == 0) || ships.size == 0){
             phase = Gameplay.BUILD;
             phaseTimer = buildTimer;
             phaseActive = false;
