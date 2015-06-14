@@ -18,8 +18,8 @@ import com.lando.systems.June15GAM.weapons.Cannonball;
 public class Ship {
 
     public static final float FRAME_DURATION = 0.2f;
-    public static final float SPEED = 32f;
-    public static final float SHOT_COOLDOWN = 4f;
+    public static final float SPEED = 16f;
+    public static final float SHOT_COOLDOWN = 5f;
 
     // TODO: different animations for different direction
     public Animation animation;
