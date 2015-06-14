@@ -55,7 +55,7 @@ public class Effect implements Pool.Poolable {
     public void render(SpriteBatch batch) {
         final float w = keyframe.getRegionWidth() * scale.floatValue();
         final float h = keyframe.getRegionHeight() * scale.floatValue();
-        batch.draw(keyframe, position.x, position.y, w, h);
+        batch.draw(keyframe, position.x - w / 2f, position.y - h / 2f, w, h);
     }
 
     public boolean isAlive() { return alive; }

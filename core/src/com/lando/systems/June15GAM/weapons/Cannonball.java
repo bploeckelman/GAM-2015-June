@@ -1,75 +1,44 @@
 package com.lando.systems.June15GAM.weapons;
 
-import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.equations.Quart;
-import aurelienribon.tweenengine.equations.Sine;
-import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Pool;
 import com.lando.systems.June15GAM.Assets;
-import com.lando.systems.June15GAM.June15GAM;
 
 /**
  * Brian Ploeckelman created on 5/21/2015.
  */
-public class Cannonball implements Pool.Poolable {
+public class Cannonball extends Projectile {
 
+    // TODO: keep separate pools for different sources instead of this?
     public enum Source { UNKNOWN, TOWER, SHIP }
-
-    public static final float SPEED = 128f;
-    public static final float MAX_SIZE = 50;
-    public static final float MIN_SIZE = 32f;
-
-    public TextureRegion texture;
-    public Vector2       position;
-    public Vector2       target;
-    public Vector2       velocity;
-    public MutableFloat  size;
-    public boolean       alive;
-    public Source        source;
-
-    public Cannonball() {
-        texture = new TextureRegion(Assets.weaponRegions[0][0]);
-        position = new Vector2();
-        velocity = new Vector2();
-        target = new Vector2();
-        size = new MutableFloat(MIN_SIZE);
-        alive = false;
-        source = Source.UNKNOWN;
-    }
-
-    public void init(float x, float y, float tx, float ty) {
-        position.set(x, y);
-        target.set(tx, ty);
-        velocity.set(tx - x, ty - y);
-        velocity.nor().scl(SPEED);
-        size.setValue(MIN_SIZE);
-        alive = true;
-
-        final Vector2 dist = new Vector2(tx - x, ty - y);
-        final float lifetime = dist.len() / (2f * velocity.len());
-        Tween.to(size, -1, lifetime)
-             .target(MAX_SIZE)
-             .ease(Sine.INOUT)
-             .repeatYoyo(1, 0)
-             .start(June15GAM.tween);
-    }
+    public Source source;
 
     @Override
-    public void reset() {
-        position.set(0, 0);
-        velocity.set(0, 0);
-        alive = false;
-    }
+    public Projectile init(float x, float y,
+                           float tx, float ty,
+                           float w, float h,
+                           float speed) {
+        this.alive = true;
+        this.bounds.set(x - w / 2f, y - h / 2f, w, h);
+        this.position.set(x, y);
+        this.speed = speed;
+        setTarget(tx, ty);
 
-    public void update(float delta) {
-        position.add(velocity.x * delta, velocity.y * delta);
+        // TODO: using a single frame for now, create an animation later
+//        this.stateTime = 0f;
+//        this.animation = Assets.cannonballAnimation;
+//        this.keyframe = animation.getKeyFrame(stateTime);
+
+        return this;
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, position.x, position.y, size.floatValue(), size.floatValue());
+        final float tile_size = 16f;
+        final float half_tile_size = tile_size / 2f;
+        batch.draw(Assets.effectsRegions[0][0],
+                   target.x - half_tile_size,
+                   target.y - half_tile_size,
+                   tile_size, tile_size);
+        super.render(batch);
     }
 
 }

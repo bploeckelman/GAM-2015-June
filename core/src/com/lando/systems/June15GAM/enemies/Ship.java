@@ -19,7 +19,7 @@ public class Ship {
 
     public static final float FRAME_DURATION = 0.2f;
     public static final float SPEED = 32f;
-    public static final float SHOT_COOLDOWN = 2f;
+    public static final float SHOT_COOLDOWN = 4f;
 
     // TODO: different animations for different direction
     public Animation animation;
@@ -99,13 +99,19 @@ public class Ship {
         final int numWalls = tileMap.getWalls().size();
         if (numWalls == 0) return;
 
+        final float tile_size = tileMap.tileSet.tileSize;
+        final float half_tile_size = tile_size / 2f;
         final int wallIndex = MathUtils.random(0, numWalls - 1);
         final Wall wall = tileMap.getWalls().get(wallIndex);
-        final float wallX = wall.x * tileMap.tileSet.tileSize - tileMap.tileSet.tileSize / 2f;
-        final float wallY = wall.y * tileMap.tileSet.tileSize - tileMap.tileSet.tileSize / 2f;
+        final float speed = 50f;
 
         Cannonball cannonball = cannonballPool.obtain();
-        cannonball.init(position.x, position.y, wallX, wallY);
+        cannonball.init(position.x + half_tile_size,
+                        position.y + half_tile_size,
+                        wall.x * tile_size + half_tile_size,
+                        wall.y * tile_size + half_tile_size,
+                        tile_size, tile_size,
+                        speed);
         cannonball.source = Cannonball.Source.SHIP;
         activeCannonballs.add(cannonball);
     }

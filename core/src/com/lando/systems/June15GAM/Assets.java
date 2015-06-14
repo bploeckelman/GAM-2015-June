@@ -15,10 +15,14 @@ public class Assets {
     public static Texture vehiclesTexture;
     public static Texture placeButtonTexture;
     public static Texture effectsTexture;
+    public static Texture spritesheetTexture;
 
     public static TextureRegion[][] effectsRegions;
     public static TextureRegion[][] weaponRegions;
     public static TextureRegion[][] vehicleRegions;
+    public static TextureRegion[][] spritesheetRegions;
+
+    public static TextureRegion defaultProjectileTexture;
 
     public static Animation explosionWaterAnim;
     public static Animation explosionGroundAnim;
@@ -28,10 +32,20 @@ public class Assets {
         weaponsTexture = new Texture("fantasy-sprites.png");
         vehiclesTexture = new Texture("fantasy-sprites.png");
         placeButtonTexture = new Texture("place_button.png");
+        spritesheetTexture = new Texture("spritesheet.png");
+
+        effectsTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        weaponsTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        vehiclesTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        placeButtonTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        spritesheetTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
         effectsRegions = TextureRegion.split(effectsTexture, 32, 32);
         weaponRegions = TextureRegion.split(weaponsTexture, 16, 16);
         vehicleRegions = TextureRegion.split(vehiclesTexture, 16, 16);
+        spritesheetRegions = TextureRegion.split(spritesheetTexture, 16, 16);
+
+        defaultProjectileTexture = spritesheetRegions[0][0];
 
         explosionWaterAnim = new Animation(
                 ExplosionWater.explosion_water_time,
@@ -62,6 +76,8 @@ public class Assets {
         effectsTexture.dispose();
         weaponsTexture.dispose();
         vehiclesTexture.dispose();
+        placeButtonTexture.dispose();
+        spritesheetTexture.dispose();
     }
 
 }

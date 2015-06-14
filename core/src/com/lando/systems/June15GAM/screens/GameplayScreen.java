@@ -208,11 +208,16 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     private void updateBuildPhase(float delta) {
         // TODO: switch to attack phase based on some condition (timer? done placing wall sections?)
         if (phaseTimer <= 0){
-            phase = Gameplay.CANNON;
-            phaseTimer = cannonTimer;
+            if (tileMap.hasInternalTiles()) {
+                phase = Gameplay.CANNON;
+                phaseTimer = cannonTimer;
+                tileMap.tetris = new CannonPlacer(3); // TODO: This should be based on something
+            } else {
+                phase = Gameplay.ATTACK;
+                phaseTimer = attackTimer;
+            }
             phaseActive = false;
             phaseEntryTimer = phaseEntryDelayTime;
-            tileMap.tetris = new CannonPlacer(3); // TODO: This should be based on something
         }
     }
 
@@ -258,9 +263,6 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     }
 
     private void updateCannonPhase(float delta){
-        if (!tileMap.hasInternalTiles()) {
-            phaseTimer = 0;
-        }
         if (phaseTimer <= 0 || tileMap.tetris.getNumberLeft() <= 0){
             spawnShips();
             phase = Gameplay.ATTACK;
@@ -311,13 +313,13 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         for (int i = activeCannonballs.size - 1; i >= 0; --i) {
             final Cannonball cannonball = activeCannonballs.get(i);
             // Only check the cannonball if it is alive and has reached its target
-            if (!cannonball.alive || !cannonball.position.epsilonEquals(cannonball.target, tileMap.tileSet.tileSize / 4f)) {
+            if (!cannonball.alive || !cannonball.didHitTarget()) {
                 continue;
             }
 
             // Get the cannonballs tile position
-            final int tx = (int) ((cannonball.position.x + cannonball.size.floatValue() / 2f) / tileMap.tileSet.tileSize);
-            final int ty = (int) ((cannonball.position.y + cannonball.size.floatValue() / 2f) / tileMap.tileSet.tileSize);
+            final int tx = (int) (cannonball.position.x / tileMap.tileSet.tileSize);
+            final int ty = (int) (cannonball.position.y / tileMap.tileSet.tileSize);
 
             TileType hitTileType = tileMap.getTileType(tx, ty);
             if (hitTileType == null) {
@@ -371,7 +373,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             tileMap.tiles[tileHitY][tileHitX].type = TileType.GROUND;
             tileMap.tiles[tileHitY][tileHitX].texture = TileTexture.GROUND_SAND;
         }
-        effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
+        effectsManager.newEffect(effectType, cannonball.target.x, cannonball.target.y);
     }
 
     private void spawnShips() {
@@ -439,13 +441,19 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     private void tapAttack(){
         final float tile_size = tileMap.tileSet.tileSize;
-        final Vector2 towerPos = new Vector2();
+        final float half_tile_size = tile_size / 2f;
+        final float speed = 75f;
+
         for (Tower tower : tileMap.getTowers()) {
             if (tower.canFire()) {
                 tower.fire();
-                towerPos.set(tower.x * tile_size + tile_size * 0.5f, tower.y * tile_size + tile_size * 0.5f);
                 Cannonball cannonball = cannonballPool.obtain();
-                cannonball.init(towerPos.x, towerPos.y, mouseWorldPos.x - tile_size, mouseWorldPos.y - tile_size);
+                cannonball.init(tower.x * tile_size + half_tile_size,
+                                tower.y * tile_size + half_tile_size,
+                                mouseWorldPos.x,
+                                mouseWorldPos.y,
+                                tile_size, tile_size,
+                                speed);
                 cannonball.source = Cannonball.Source.TOWER;
                 activeCannonballs.add(cannonball);
                 break;
