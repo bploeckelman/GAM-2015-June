@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.lando.systems.June15GAM.buildings.*;
-import com.lando.systems.June15GAM.wallpiece.WallPiece;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -212,7 +211,7 @@ public class TileMap {
     public boolean hasInternalTiles() {
         for (int y = 0; y < tiles.length; ++y) {
             for (int x = 0; x < tiles[0].length; ++x) {
-                if (tiles[y][x].type == TileType.INTERIOR) {
+                if (tiles[y][x].type == TileType.INTERIOR && getBuildingAt(x, y) == null) {
                     return true;
                 }
             }
