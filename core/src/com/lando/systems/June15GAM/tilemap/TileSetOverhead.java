@@ -3,6 +3,7 @@ package com.lando.systems.June15GAM.tilemap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.lando.systems.June15GAM.Assets;
 
 /**
  * Brian Ploeckelman created on 5/12/2015.
@@ -19,6 +20,8 @@ public class TileSetOverhead extends TileSet {
         final Texture atlasTex = atlas.getTextures().first();
         textures.put(TileTexture.SELECTION,             new TextureRegion(atlasTex, atlasTex.getWidth() - tileSize / 2f, 0, tileSize / 2f, tileSize / 2f));
         textures.put(TileTexture.BLANK,                 new TextureRegion(atlasTex, atlasTex.getWidth() - tileSize / 2f, atlasTex.getHeight() - tileSize / 2f, tileSize / 2f, tileSize / 2f));
+        textures.put(TileTexture.CANNON_READY,          new TextureRegion(Assets.spritesheetRegions[1][0]));
+        textures.put(TileTexture.CANNON_LOADING,        new TextureRegion(Assets.spritesheetRegions[1][1]));
         textures.put(TileTexture.GROUND_CLAY,           atlas.findRegion("ground-clay"));
         textures.put(TileTexture.GROUND_CONCRETE,       atlas.findRegion("ground-concrete"));
         textures.put(TileTexture.GROUND_GRASS,          atlas.findRegion("ground-grass"));

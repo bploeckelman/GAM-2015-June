@@ -15,7 +15,7 @@ public class Tower extends Building {
 
     public Tower(int x, int y){
         super(x,y);
-        texture = TileTexture.GROUND_CONCRETE;
+        texture = TileTexture.CANNON_READY;
         shotDelay = default_shot_delay;
         shotTimer = 0f;
     }
@@ -26,7 +26,8 @@ public class Tower extends Building {
         if (shotTimer < 0f) {
             shotTimer = 0f;
         }
-        texture = canFire() ? TileTexture.GROUND_ROAD : TileTexture.GROUND_CONCRETE;
+        // TODO: display countdown timer overlay on top of cannons that are reloading
+        texture = canFire() ? TileTexture.CANNON_READY: TileTexture.CANNON_LOADING;
     }
 
     public boolean canFire() {

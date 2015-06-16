@@ -7,6 +7,8 @@ public enum TileTexture {
 
     SELECTION,
     BLANK,
+    CANNON_READY,
+    CANNON_LOADING,
     GROUND_CLAY,
     GROUND_CONCRETE,
     GROUND_GRASS,
