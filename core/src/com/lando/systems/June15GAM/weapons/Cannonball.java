@@ -3,7 +3,6 @@ package com.lando.systems.June15GAM.weapons;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.equations.Sine;
-import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.lando.systems.June15GAM.Assets;
@@ -15,9 +14,12 @@ import com.lando.systems.June15GAM.June15GAM;
 public class Cannonball extends Projectile {
 
     static final float MAX_SIZE = 20f;
+    public static float frame_duration = 0.05f;
 
     // TODO: keep separate pools for different sources instead of this?
-    public enum Source { UNKNOWN, TOWER, SHIP }
+    public enum Source {
+        UNKNOWN, TOWER, SHIP
+    }
 
     public Source source;
 
@@ -48,10 +50,9 @@ public class Cannonball extends Projectile {
                            .repeatYoyo(1, 0))
                 .start(June15GAM.tween);
 
-        // TODO: using a single frame for now, create an animation later
-//        this.stateTime = 0f;
-//        this.animation = Assets.cannonballAnimation;
-//        this.keyframe = animation.getKeyFrame(stateTime);
+        this.stateTime = 0f;
+        this.animation = Assets.cannonballAnim;
+        this.keyframe = animation.getKeyFrame(stateTime);
 
         return this;
     }

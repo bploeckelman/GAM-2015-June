@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.lando.systems.June15GAM.effects.ExplosionGround;
 import com.lando.systems.June15GAM.effects.ExplosionWater;
+import com.lando.systems.June15GAM.weapons.Cannonball;
 
 /**
  * Brian Ploeckelman created on 5/21/2015.
@@ -26,6 +27,7 @@ public class Assets {
 
     public static Animation explosionWaterAnim;
     public static Animation explosionGroundAnim;
+    public static Animation cannonballAnim;
 
     public static void load() {
         effectsTexture = new Texture("oryx_16bit_scifi_FX_lg_trans.png");
@@ -70,6 +72,14 @@ public class Assets {
                 effectsRegions[9][7],
                 effectsRegions[10][5],
                 effectsRegions[2][5]);
+
+        cannonballAnim = new Animation(
+                Cannonball.frame_duration,
+                spritesheetRegions[0][0],
+                spritesheetRegions[0][1],
+                spritesheetRegions[0][2],
+                spritesheetRegions[0][3]);
+        cannonballAnim.setPlayMode(Animation.PlayMode.LOOP);
     }
 
     public static void dispose() {
