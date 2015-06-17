@@ -33,9 +33,11 @@ import com.lando.systems.June15GAM.weapons.Cannonball;
  */
 public class GameplayScreen extends ScreenAdapter implements GestureDetector.GestureListener {
 
+    // TODO: move to June15GAM class as static globals?
+    public static Vector3 mouseScreenPos;
+    public static Vector3 mouseWorldPos;
+
     final June15GAM    game;
-    Vector3            mouseScreenPos;
-    Vector3            mouseWorldPos;
     FrameBuffer        sceneFrameBuffer;
     SpriteBatch        batch;
     TextureRegion      sceneRegion;

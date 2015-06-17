@@ -1,5 +1,6 @@
 package com.lando.systems.June15GAM.buildings;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.lando.systems.June15GAM.buildings.Building;
 import com.lando.systems.June15GAM.tilemap.TileTexture;
 

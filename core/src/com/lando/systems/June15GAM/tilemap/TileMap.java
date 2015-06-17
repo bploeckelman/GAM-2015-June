@@ -3,7 +3,10 @@ package com.lando.systems.June15GAM.tilemap;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.lando.systems.June15GAM.buildings.*;
+import com.lando.systems.June15GAM.screens.GameplayScreen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,26 +56,44 @@ public class TileMap {
     }
 
 
+    // TODO: move me
+    Vector2 mouseDir = new Vector2();
 
     public void render(SpriteBatch batch) {
         for (int y = 0; y < tiles.length; ++y) {
             for (int x = 0; x < tiles[y].length; ++x) {
                 final TextureRegion tile = tileSet.textures.get(tiles[y][x].texture);
-                if (tiles[y][x].type == TileType.INTERIOR){
+                if (tiles[y][x].type == TileType.INTERIOR) {
                     batch.setColor(Color.LIGHT_GRAY);
                 }
                 batch.draw(tile, x * tileSet.tileSize, y * tileSet.tileSize);
                 batch.setColor(Color.WHITE);
             }
         }
-        for (Building building : buildings.values()){
+
+        final float tile_size = tileSet.tileSize;
+        final float originX = tile_size / 2f;
+        final float originY = tile_size / 2f;
+        final float scaleX = 1f;
+        final float scaleY = 1f;
+        for (Building building : buildings.values()) {
             if (building == null) continue;
+
             final TextureRegion tile = tileSet.textures.get(building.texture);
-            batch.draw(tile, building.x * tileSet.tileSize, building.y * tileSet.tileSize, tileSet.tileSize, tileSet.tileSize);
+            final float positionX = building.x * tile_size;
+            final float positionY = building.y * tile_size;
+            final float angle_offset = -90f;
+            float rotation = 0f;
+
+            // TODO: refactor Building to handle their own drawing to avoid this sort of specialization
+            if (building instanceof Tower) {
+                rotation = MathUtils.atan2(GameplayScreen.mouseWorldPos.y - positionY,
+                                           GameplayScreen.mouseWorldPos.x - positionX)
+                         * MathUtils.radiansToDegrees + angle_offset;
+            }
+
+            batch.draw(tile, positionX, positionY, originX, originY, tile_size, tile_size, scaleX, scaleY, rotation);
         }
-
-
-
     }
 
 
