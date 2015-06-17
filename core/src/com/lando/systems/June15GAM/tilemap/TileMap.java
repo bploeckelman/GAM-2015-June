@@ -26,6 +26,7 @@ public class TileMap {
     private int height;
     private Keep homeKeep;
     public MoveableObject tetris;
+    private ArrayList<Tower> towers;
 
 
 
@@ -49,6 +50,7 @@ public class TileMap {
                 }
             }
         }
+        towers = new ArrayList<Tower>();
 
         makeStarterCastle(15, 15);
         setInternal();
@@ -116,12 +118,6 @@ public class TileMap {
     }
 
     public ArrayList<Tower> getTowers(){
-        ArrayList<Tower> towers = new ArrayList<Tower>();
-        for (Building building : buildings.values()){
-            if (building instanceof Tower){
-                towers.add((Tower)building);
-            }
-        }
         return towers;
     }
 
@@ -130,7 +126,9 @@ public class TileMap {
     }
 
     public void setTower(int x, int y){
-        buildings.put(x + y * width, new Tower(x, y));
+        final Tower tower = new Tower(x, y);
+        towers.add(tower);
+        buildings.put(x + y * width, tower);
     }
 
     public TileType getTileType(int x, int y){
@@ -141,7 +139,13 @@ public class TileMap {
     }
 
     public void destroyBuildingAt(int x, int y){
-        buildings.put(x + y * width, null);
+        Building building = buildings.get(x + y * width);
+        if (building != null) {
+            buildings.put(x + y * width, null);
+            if (building instanceof Tower) {
+                towers.remove(building);
+            }
+        }
         reconcileWalls();
     }
 
