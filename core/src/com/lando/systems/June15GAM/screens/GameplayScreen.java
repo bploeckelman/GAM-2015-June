@@ -144,7 +144,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         }
 
         // Draw user interface overlays
-        font.draw(batch, "Turn #" + turn + ": " + phase.name(), 10, camera.viewportHeight - 10);
+//        font.draw(batch, "Turn #" + turn + ": " + phase.name(), 10, camera.viewportHeight - 10);
         String timerString = "Time Left: " + (int)Math.max(Math.ceil(phaseTimer), 0);
         layout.setText(font, timerString);
         font.draw(batch, timerString, camera.viewportWidth - (layout.width + 30), camera.viewportHeight - 10);
