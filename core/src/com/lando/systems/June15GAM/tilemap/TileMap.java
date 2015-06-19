@@ -52,7 +52,7 @@ public class TileMap {
         }
         towers = new ArrayList<Tower>();
 
-        makeStarterCastle(15, 15);
+        makeStarterCastle(5, 5);
         setInternal();
         reconcileWalls();
     }
