@@ -410,12 +410,15 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     @Override
     public boolean tap(float x, float y, int count, int button) {
         if (phaseTimer <= 0) return true;
+        // TODO: pass button input values into phase tap handlers and do conditional checks on button there instead
         if (button == 0) {
             switch (phase) {
                 case BUILD:  tapBuild();  break;
                 case CANNON: tapCannon(); break;
                 case ATTACK: tapAttack();  break;
             }
+        } else if (button == 1 && phase == Gameplay.BUILD) {
+            tileMap.tetris.rotate(WallPiece.R.C);
         }
         return false;
     }
