@@ -194,6 +194,10 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             layout.setText(font, phase.name() + " Phase!");
             font.draw(batch, phase.name() + " Phase!", (camera.viewportWidth - layout.width) / 2, (camera.viewportHeight + layout.height) /2);
             font.getData().setScale(2);
+            if (phaseEntryTimer <= 0) {
+                layout.setText(font, "Touch to Start");
+                font.draw(batch, "Touch to Start", (camera.viewportWidth - layout.width) / 2, (camera.viewportHeight + layout.height) / 2 - 50);
+            }
         }
         batch.end();
     }
@@ -228,6 +232,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     private void updateBuildPhase(float delta) {
         // TODO: switch to attack phase based on some condition (timer? done placing wall sections?)
         if (phaseTimer <= 0){
+            tileMap.setInternal();
             if (tileMap.hasInternalTiles()) {
                 phase = Gameplay.CANNON;
                 phaseTimer = cannonTimer;
@@ -322,6 +327,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     private void updateGamePhase() {
         // Update gameplay phase
         if ((phaseTimer <= 0 && activeCannonballs.size == 0) || ships.size == 0){
+            tileMap.setInternal();
             phase = Gameplay.BUILD;
             phaseTimer = buildTimer;
             phaseActive = false;
