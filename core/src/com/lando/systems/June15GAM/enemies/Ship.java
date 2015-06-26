@@ -105,13 +105,13 @@ public class Ship {
     }
 
     private BreadCrumb newTarget(){
-        int x = MathUtils.random(world.width);
-        int y = MathUtils.random(world.height);
+        int x = MathUtils.random(world.width - 5) + 2;
+        int y = MathUtils.random(world.height - 5) + 2;
         while (world.getTileType(x, y) != TileType.WATER){
-            x = MathUtils.random(world.width);
-            y = MathUtils.random(world.height);
+            x = MathUtils.random(world.width - 5) + 2;
+            y = MathUtils.random(world.height - 5) + 2;
         }
-        return Pathfinder.FindPath(world, x, y, (int)(position.x/world.tileSet.tileSize), (int)(position.y/world.tileSet.tileSize));
+        return Pathfinder.FindPath(world, (int)(position.x/world.tileSet.tileSize), (int)(position.y/world.tileSet.tileSize),  x, y);
     }
 
 //    public boolean reachedTarget() {

@@ -51,11 +51,13 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     boolean            phaseActive;
     float              phaseTimer;
     float              phaseEntryTimer;
+    float              noActionTimer;
     final float        cannonTimer = 15;
     final float        attackTimer = 30;
     final float        buildTimer = 25;
-    final float        phaseEntryDelayTime = 1;
+    final float        phaseEntryDelayTime = 2;
     final int          numShipsToAdd = 3;
+
     GlyphLayout layout = new GlyphLayout();
 
     float              deviceScaleX;
@@ -191,6 +193,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.exit();
         }
+        noActionTimer -= delta;
 
         if (phaseActive){
             phaseTimer -= delta;
@@ -201,7 +204,10 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             }
         } else {
             phaseEntryTimer -= delta;
-            if (phaseEntryTimer <= 0) phaseActive = true;
+            if (phaseEntryTimer <= 0 && Gdx.input.justTouched()) {
+                phaseActive = true;
+                noActionTimer = .2f;
+            }
         }
 
         effectsManager.update(delta);
@@ -433,7 +439,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        if (phaseTimer <= 0) return true;
+        if (phaseTimer <= 0 || !phaseActive || noActionTimer > 0) return true;
         // TODO: pass button input values into phase tap handlers and do conditional checks on button there instead
         if (button == 0) {
             switch (phase) {
@@ -507,6 +513,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
+        if (!phaseActive) return false;
         if (phase == Gameplay.ATTACK) return false;
         float panScale = 1;
         if (tileMap.tetris != null){
