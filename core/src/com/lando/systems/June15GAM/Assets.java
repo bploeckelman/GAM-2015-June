@@ -3,6 +3,7 @@ package com.lando.systems.June15GAM;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.lando.systems.June15GAM.buildings.Keep;
 import com.lando.systems.June15GAM.effects.ExplosionGround;
 import com.lando.systems.June15GAM.effects.ExplosionWater;
 import com.lando.systems.June15GAM.weapons.Cannonball;
@@ -28,6 +29,7 @@ public class Assets {
     public static Animation explosionWaterAnim;
     public static Animation explosionGroundAnim;
     public static Animation cannonballAnim;
+    public static Animation keepAnim;
 
     public static void load() {
         effectsTexture = new Texture("oryx_16bit_scifi_FX_lg_trans.png");
@@ -80,6 +82,14 @@ public class Assets {
                 spritesheetRegions[0][2],
                 spritesheetRegions[0][3]);
         cannonballAnim.setPlayMode(Animation.PlayMode.LOOP);
+
+        keepAnim = new Animation(
+                Keep.frameDuration,
+                spritesheetRegions[3][0],
+                spritesheetRegions[3][1],
+                spritesheetRegions[3][2],
+                spritesheetRegions[3][3]);
+        keepAnim.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
     }
 
     public static void dispose() {

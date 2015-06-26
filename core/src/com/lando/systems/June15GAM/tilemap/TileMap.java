@@ -16,12 +16,14 @@ import java.util.HashMap;
  */
 public class TileMap {
 
+    public static final int NUM_STARTER_CANNONS = 3;
+
     public TileSet  tileSet;
     public Tile[][] tiles;
     public boolean gameLost;
 
-    private HashMap<Integer, Building> buildings;
-    private int castleRadius = 3;
+    public HashMap<Integer, Building> buildings;
+    private int castleRadius = 2;
     private int width;
     private int height;
     private Keep homeKeep;
@@ -32,7 +34,7 @@ public class TileMap {
 
     public TileMap(TileSet tileSet, int xTiles, int yTiles) {
         this.tileSet = tileSet;
-        tetris = new CannonPlacer(4);
+        tetris = new CannonPlacer(NUM_STARTER_CANNONS);
         mapSeed = MathUtils.random(1000);
         gameLost = false;
         buildings = new HashMap<Integer, Building>();
@@ -88,7 +90,7 @@ public class TileMap {
         for (Building building : buildings.values()) {
             if (building == null) continue;
 
-            final TextureRegion tile = tileSet.textures.get(building.texture);
+            TextureRegion tile = tileSet.textures.get(building.texture);
             final float positionX = building.x * tile_size;
             final float positionY = building.y * tile_size;
             final float angle_offset = -90f;
@@ -99,6 +101,8 @@ public class TileMap {
                 rotation = MathUtils.atan2(GameplayScreen.mouseWorldPos.y - positionY,
                                            GameplayScreen.mouseWorldPos.x - positionX)
                          * MathUtils.radiansToDegrees + angle_offset;
+            } else if (building instanceof Keep) {
+                tile = ((Keep) building).keyframe;
             }
 
             batch.draw(tile, positionX, positionY, originX, originY, tile_size, tile_size, scaleX, scaleY, rotation);

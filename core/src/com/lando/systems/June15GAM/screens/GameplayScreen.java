@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 import com.lando.systems.June15GAM.Assets;
 import com.lando.systems.June15GAM.June15GAM;
+import com.lando.systems.June15GAM.buildings.Building;
 import com.lando.systems.June15GAM.buildings.CannonPlacer;
 import com.lando.systems.June15GAM.buildings.Tower;
 import com.lando.systems.June15GAM.effects.Effect;
@@ -215,7 +216,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             if (tileMap.hasInternalTiles()) {
                 phase = Gameplay.CANNON;
                 phaseTimer = cannonTimer;
-                tileMap.tetris = new CannonPlacer(3); // TODO: This should be based on something
+                tileMap.tetris = new CannonPlacer(3); // TODO: should be based on number of interior tiles
                 clearCannonballs();
                 resetCannons();
             } else {
@@ -296,9 +297,10 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             }
         }
 
-        // Update towers
-        for (Tower tower : tileMap.getTowers()) {
-            tower.update(delta);
+        // Update buildings
+        for (Building building : tileMap.buildings.values()) {
+            if (building == null) continue;
+            building.update(delta);
         }
 
         // Update cannonballs
