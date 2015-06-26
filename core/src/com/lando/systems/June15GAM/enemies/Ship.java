@@ -39,6 +39,7 @@ public class Ship {
     final TextureRegion targetTexture;
 
     public Ship(TileMap world, float x, float y, float w, float h) {
+        shotTimer = MathUtils.random(4f) + 2;
         this.world = world;
         this.animation = new Animation(Ship.FRAME_DURATION,
                                        Assets.vehicleRegions[1][2],
@@ -59,10 +60,8 @@ public class Ship {
     // TODO: collision checking and resolution
 
     public void update(float delta) {
-        shotTimer += delta;
-        if (shotTimer > SHOT_COOLDOWN) {
-            shotTimer = SHOT_COOLDOWN;
-        }
+        shotTimer -= delta;
+
 
         // TODO: switch animations based on movement direction
         animTimer += delta;
@@ -136,11 +135,11 @@ public class Ship {
 //    }
 
     public boolean canShoot() {
-        return shotTimer >= SHOT_COOLDOWN;
+        return shotTimer < 0;
     }
 
     public void shoot(TileMap tileMap, Pool<Cannonball> cannonballPool, Array<Cannonball> activeCannonballs) {
-        shotTimer = 0f;
+        shotTimer = MathUtils.random(2f) + SHOT_COOLDOWN;
 
         final int numWalls = tileMap.getWalls().size();
         if (numWalls == 0) return;

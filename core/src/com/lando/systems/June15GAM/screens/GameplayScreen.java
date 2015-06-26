@@ -62,6 +62,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     float              deviceScaleX;
     float              deviceScaleY;
+    public int         score;
 
     public enum Gameplay {
         BUILD,
