@@ -17,7 +17,7 @@ public class Wall extends Building {
 
         switch (neighbors){
             case 0:
-                texture = TileTexture.GROUND_CONCRETE;
+                texture = TileTexture.ROAD_FOURWAY;
                 break;
             case 1: // N
                 texture = TileTexture.ROAD_LINE_THIN_END_S;
