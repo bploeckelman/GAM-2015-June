@@ -12,7 +12,7 @@ import com.lando.systems.June15GAM.accessors.ColorAccessor;
 import com.lando.systems.June15GAM.accessors.RectangleAccessor;
 import com.lando.systems.June15GAM.accessors.Vector2Accessor;
 import com.lando.systems.June15GAM.accessors.Vector3Accessor;
-import com.lando.systems.June15GAM.screens.GameplayScreen;
+import com.lando.systems.June15GAM.screens.MenuScreen;
 import com.lando.systems.June15GAM.screens.TestScreen;
 
 public class June15GAM extends Game {
@@ -30,8 +30,7 @@ public class June15GAM extends Game {
         Tween.registerAccessor(Vector2.class, new Vector2Accessor());
         Tween.registerAccessor(Vector3.class, new Vector3Accessor());
 
-        // TODO make this main menu later
-        setScreen(new GameplayScreen(this));
+        setScreen(new MenuScreen(this));
     }
 
     @Override

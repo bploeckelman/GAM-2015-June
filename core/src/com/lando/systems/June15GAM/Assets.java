@@ -1,8 +1,12 @@
 package com.lando.systems.June15GAM;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.lando.systems.June15GAM.buildings.Keep;
 import com.lando.systems.June15GAM.effects.ExplosionGround;
 import com.lando.systems.June15GAM.effects.ExplosionWater;
@@ -19,6 +23,8 @@ public class Assets {
     public static Texture effectsTexture;
     public static Texture spritesheetTexture;
 
+    public static ShaderProgram menuBackgroundShader;
+
     public static TextureRegion[][] effectsRegions;
     public static TextureRegion[][] weaponRegions;
     public static TextureRegion[][] vehicleRegions;
@@ -32,6 +38,9 @@ public class Assets {
     public static Animation keepAnim;
 
     public static void load() {
+        menuBackgroundShader = compileShaderProgram(Gdx.files.internal("shaders/default.vert"),
+                                                    Gdx.files.internal("shaders/menu.frag"));
+
         effectsTexture = new Texture("oryx_16bit_scifi_FX_lg_trans.png");
         weaponsTexture = new Texture("fantasy-sprites.png");
         vehiclesTexture = new Texture("fantasy-sprites.png");
@@ -93,11 +102,24 @@ public class Assets {
     }
 
     public static void dispose() {
+        menuBackgroundShader.dispose();
         effectsTexture.dispose();
         weaponsTexture.dispose();
         vehiclesTexture.dispose();
         placeButtonTexture.dispose();
         spritesheetTexture.dispose();
+    }
+
+    private static ShaderProgram compileShaderProgram(FileHandle vertSource, FileHandle fragSource) {
+        ShaderProgram.pedantic = false;
+        ShaderProgram shader = new ShaderProgram(vertSource, fragSource);
+        if (!shader.isCompiled()) {
+            throw new GdxRuntimeException("Failed to compile shader program:\n" + shader.getLog());
+        }
+        else if (shader.getLog().length() > 0) {
+            Gdx.app.error("SHADER", "ShaderProgram compilation log:\n" + shader.getLog());
+        }
+        return shader;
     }
 
 }

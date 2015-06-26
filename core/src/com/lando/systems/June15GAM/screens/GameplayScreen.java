@@ -225,9 +225,16 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             }
         } else {
             phaseEntryTimer -= delta;
-            if (phaseEntryTimer <= 0 && Gdx.input.justTouched()) {
-                phaseActive = true;
-                noActionTimer = .2f;
+            if (Gdx.input.justTouched()) {
+                if (phaseEntryTimer <= 0) {
+                    phaseActive = true;
+                    noActionTimer = .2f;
+                }
+                if (phase == Gameplay.GAMEOVER) {
+                    dispose();
+                    // TODO: nice transition?
+                    game.setScreen(new MenuScreen(game));
+                }
             }
         }
 
