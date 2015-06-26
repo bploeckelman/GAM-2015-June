@@ -46,9 +46,11 @@ public class TileMap {
                 double noise2 = SimplexNoise.noise((mapSeed +x)/5.0, y/5.0) * .3f;
                 double noise3 = SimplexNoise.noise((mapSeed +x)*1, y*1) * .2f;
                 double noise = noise1 + noise2 + noise3;
-                float weight = 3 * (MathUtils.clamp(((height - y) - 2)/(float)((height+2)/2),0 , 1) - .5f);
+                float weight = 2.5f * (MathUtils.clamp(((height - y) - 2)/(float)((height+2)/2),0 , 1) - .5f);
                 if (noise + weight < 0) {
                     tiles[y][x] = new Tile(TileType.WATER, TileTexture.GROUND_WATER, x, y);
+                } else if (noise + weight < .4f){
+                    tiles[y][x] = new Tile(TileType.GROUND, TileTexture.GROUND_SAND, x, y);
                 } else {
                     tiles[y][x] = new Tile(TileType.GROUND, TileTexture.GROUND_GRASS, x, y);
 
