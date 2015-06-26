@@ -66,7 +66,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     public enum Gameplay {
         BUILD,
         CANNON,
-        ATTACK
+        ATTACK,
+        GAMEOVER
         // ???
         // PROFIT
     }
@@ -180,7 +181,15 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         if (phase == Gameplay.BUILD)
             batch.draw(Assets.placeButtonTexture, rotateButtonRect.x, rotateButtonRect.y, rotateButtonRect.width, rotateButtonRect.height);
 
-        if (!phaseActive){
+        if (phase == Gameplay.GAMEOVER) {
+            font.getData().setScale(3);
+            final String text = "Game Over, You're Bad at Life!";
+            layout.setText(font, text);
+            font.draw(batch, text, (camera.viewportWidth - layout.width) / 2f, (camera.viewportHeight + layout.height) / 2f);
+            font.getData().setScale(2);
+        }
+
+        if (!phaseActive && phase != Gameplay.GAMEOVER){
             font.getData().setScale(5);
             layout.setText(font, phase.name() + " Phase!");
             font.draw(batch, phase.name() + " Phase!", (camera.viewportWidth - layout.width) / 2, (camera.viewportHeight + layout.height) /2);
@@ -226,10 +235,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 clearCannonballs();
                 resetCannons();
             } else {
-                phase = Gameplay.ATTACK;
-                phaseTimer = attackTimer;
-                clearCannonballs();
-                resetCannons();
+                phase = Gameplay.GAMEOVER;
+                // TODO: maybe do some other things here?
             }
             phaseActive = false;
             phaseEntryTimer = phaseEntryDelayTime;
