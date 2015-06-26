@@ -27,12 +27,13 @@ public class TileMap {
     private Keep homeKeep;
     public MoveableObject tetris;
     private ArrayList<Tower> towers;
-
+    private int mapSeed;
 
 
     public TileMap(TileSet tileSet, int xTiles, int yTiles) {
         this.tileSet = tileSet;
         tetris = new CannonPlacer(4);
+        mapSeed = MathUtils.random(1000);
         gameLost = false;
         buildings = new HashMap<Integer, Building>();
         width = xTiles;
@@ -41,8 +42,12 @@ public class TileMap {
         tiles = new Tile[yTiles][xTiles];
         for (int y = 0; y < tiles.length; ++y) {
             for (int x = 0; x < tiles[y].length; ++x) {
-
-                if (y > (tiles.length * 2 / 3)) {
+                double noise1 = SimplexNoise.noise((mapSeed +x)/10.0, y/10.0) * .5f;
+                double noise2 = SimplexNoise.noise((mapSeed +x)/5.0, y/5.0) * .3f;
+                double noise3 = SimplexNoise.noise((mapSeed +x)*1, y*1) * .2f;
+                double noise = noise1 + noise2 + noise3;
+                float weight = 3 * (MathUtils.clamp(((height - y) - 2)/(float)((height+2)/2),0 , 1) - .5f);
+                if (noise + weight < 0) {
                     tiles[y][x] = new Tile(TileType.WATER, TileTexture.GROUND_WATER, x, y);
                 } else {
                     tiles[y][x] = new Tile(TileType.GROUND, TileTexture.GROUND_GRASS, x, y);
