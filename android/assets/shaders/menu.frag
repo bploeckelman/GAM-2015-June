@@ -11,8 +11,9 @@ uniform vec2      u_resolution;
 void main() {
 	vec4 texColor = texture2D(u_texture, v_texCoord0);
 
-	float squares = 0.005 + sin(u_time / 1000.) / 500.;
+	float squares = 0.05;
 	vec2 uv = v_texCoord0.xy;
+	uv.xy -= u_time / 100.;
 	vec2 moduv = mod(uv, squares) - (squares/2.);
 
 	float dist = abs(moduv.x) + abs(moduv.y);

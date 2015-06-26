@@ -3,6 +3,7 @@ package com.lando.systems.June15GAM.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -56,13 +57,16 @@ public class MenuScreen extends ScreenAdapter {
     public void render(float delta) {
         update(delta);
 
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         batch.setProjectionMatrix(camera.combined);
 
         batch.setShader(Assets.menuBackgroundShader);
         batch.begin();
         Assets.menuBackgroundShader.setUniformf("u_time", u_time);
         Assets.menuBackgroundShader.setUniformf("u_resolution", camera.viewportWidth, camera.viewportHeight);
-        batch.draw(Assets.spritesheetRegions[15][15], 0, 0, camera.viewportWidth, camera.viewportHeight);
+        // NOTE: could be any full texture (not a region)
+        batch.draw(Assets.vehiclesTexture, 0, 0, camera.viewportWidth, camera.viewportHeight);
         batch.end();
 
         batch.setShader(null);
