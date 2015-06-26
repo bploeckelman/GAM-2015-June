@@ -139,6 +139,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 ship.render(batch);
             }
             for (Cannonball cannonball : activeCannonballs) {
+                cannonball.renderShadow(batch);
+            }
+            for (Cannonball cannonball : activeCannonballs) {
                 cannonball.render(batch);
             }
         }

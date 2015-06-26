@@ -106,4 +106,6 @@ public abstract class Projectile implements Pool.Poolable {
         batch.draw(keyframe, bounds.x, bounds.y, bounds.width, bounds.height);
     }
 
+    public void renderShadow(SpriteBatch batch) {}
+
 }
