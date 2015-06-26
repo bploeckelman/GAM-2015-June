@@ -35,6 +35,10 @@ public class Tower extends Building {
         return (shotTimer <= 0f);
     }
 
+    public void enableShot() {
+        shotTimer = 0f;
+    }
+
     public void fire() {
         shotTimer = shotDelay;
     }
