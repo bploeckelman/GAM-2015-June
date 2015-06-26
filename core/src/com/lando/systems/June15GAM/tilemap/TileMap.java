@@ -62,7 +62,16 @@ public class TileMap {
         }
         towers = new ArrayList<Tower>();
 
-        makeStarterCastle(5, 5);
+        // TODO: hackity hack hack... come up with a better way of placing keeps
+        final int mid = width / 2 - 1;
+        final int left = mid / 3;
+        final int right = width - left;
+        final int ypos = 5;
+
+        makeStarterCastle(mid, ypos);
+        buildings.put(left  + ypos * width, new Keep(left, ypos));
+        buildings.put(right + ypos * width, new Keep(right, ypos));
+
         setInternal();
         reconcileWalls();
     }
