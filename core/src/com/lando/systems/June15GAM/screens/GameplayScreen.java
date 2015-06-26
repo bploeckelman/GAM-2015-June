@@ -242,7 +242,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             if (!tileMap.isGameLost()) {
                 phase = Gameplay.CANNON;
                 phaseTimer = cannonTimer;
-                tileMap.tetris = new CannonPlacer(3); // TODO: should be based on number of interior tiles
+                tileMap.tetris = new CannonPlacer(tileMap); // TODO: should be based on number of interior tiles
                 clearCannonballs();
                 resetCannons();
             } else {

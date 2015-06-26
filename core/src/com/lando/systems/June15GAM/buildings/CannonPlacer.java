@@ -3,6 +3,7 @@ package com.lando.systems.June15GAM.buildings;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.lando.systems.June15GAM.tilemap.TileMap;
 import com.lando.systems.June15GAM.tilemap.TileTexture;
 import com.lando.systems.June15GAM.tilemap.TileType;
@@ -14,8 +15,9 @@ public class CannonPlacer extends MoveableObject {
 
     private int numberToPlace = 0;
 
-    public CannonPlacer(int count){
-        numberToPlace = count;
+    public CannonPlacer(TileMap world){
+        int internalTiles = world.numberOfInternalTiles();
+        numberToPlace = 2 + (int)MathUtils.log(4, internalTiles);
     }
 
     public boolean isValidPlacement(TileMap tileMap) {

@@ -35,7 +35,7 @@ public class TileMap {
 
     public TileMap(TileSet tileSet, int xTiles, int yTiles) {
         this.tileSet = tileSet;
-        tetris = new CannonPlacer(NUM_STARTER_CANNONS);
+
         mapSeed = MathUtils.random(1000);
         buildings = new HashMap<Integer, Building>();
         keeps = new ArrayList<Keep>();
@@ -78,6 +78,7 @@ public class TileMap {
 
         setInternal();
         reconcileWalls();
+        tetris = new CannonPlacer(this);
     }
 
 
@@ -276,6 +277,18 @@ public class TileMap {
             }
         }
         return false;
+    }
+
+    public int numberOfInternalTiles(){
+        int count = 0;
+        for (int y = 0; y < tiles.length; ++y) {
+            for (int x = 0; x < tiles[0].length; ++x) {
+                if (tiles[y][x].type == TileType.INTERIOR && getBuildingAt(x, y) == null) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     public boolean isGameLost(){
