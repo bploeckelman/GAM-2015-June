@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.lando.systems.June15GAM.Assets;
+import com.lando.systems.June15GAM.buildings.Building;
 import com.lando.systems.June15GAM.buildings.Wall;
 import com.lando.systems.June15GAM.tilemap.TileMap;
 import com.lando.systems.June15GAM.tilemap.TileType;
@@ -147,18 +148,26 @@ public class Ship {
         shotTimer = MathUtils.random(4f) + SHOT_COOLDOWN;
 
         final int numWalls = tileMap.getWalls().size();
-        if (numWalls == 0) return;
+        final int numCannons = tileMap.getTowers().size();
+        if (numWalls == 0 && numCannons == 0) return;
 
         final float tile_size = tileMap.tileSet.tileSize;
         final float half_tile_size = tile_size / 2f;
-        final int wallIndex = MathUtils.random(0, numWalls - 1);
-        final Wall wall = tileMap.getWalls().get(wallIndex);
+        final int buildingIndex = MathUtils.random(0, numWalls+numCannons - 1);
+
+        Building building;
+        if (buildingIndex < numWalls){
+            building = tileMap.getWalls().get(buildingIndex);
+        } else {
+            building = tileMap.getTowers().get(buildingIndex - numWalls);
+        }
+
 
         Cannonball cannonball = cannonballPool.obtain();
         cannonball.init(position.x + half_tile_size / 2f,
                         position.y + half_tile_size / 2f,
-                        wall.x * tile_size + half_tile_size,
-                        wall.y * tile_size + half_tile_size,
+                        building.x * tile_size + half_tile_size,
+                        building.y * tile_size + half_tile_size,
                         half_tile_size, half_tile_size,
                         cannonballSpeed);
         cannonball.source = Cannonball.Source.SHIP;

@@ -339,7 +339,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             phaseActive = false;
             phaseEntryTimer = phaseEntryDelayTime;
             turn++;
-            tileMap.tetris = new WallPiece();
+            tileMap.tetris = new WallPiece(tileMap);
             clearCannonballs();
             resetCannons();
         }

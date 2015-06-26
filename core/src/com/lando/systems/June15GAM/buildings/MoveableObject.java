@@ -17,25 +17,30 @@ public class MoveableObject {
     protected int offsetY = 0;
     protected int offsetMaxX = 1;
     protected int offsetMaxY = 1;
+    TileMap world;
+
+    public MoveableObject(TileMap world){
+        this.world = world;
+    }
 
     public void render(TileMap map, SpriteBatch batch){
-        batch.draw(Assets.weaponsTexture, getTileX() * 16, getTileY() * 16, 16, 16);
+        batch.draw(Assets.weaponsTexture, getTileX() * world.tileSet.tileSize, getTileY() * world.tileSet.tileSize, world.tileSet.tileSize, world.tileSet.tileSize);
     }
 
     public int getTileX(){
-        return (int)(xFloat/16); // Todo: make this not a magic number?
+        return (int)(xFloat/world.tileSet.tileSize); // Todo: make this not a magic number?
     }
 
     public int getTileY(){
-        return (int)(yFloat/16); // Todo: make this not a magic number?
+        return (int)(yFloat/world.tileSet.tileSize); // Todo: make this not a magic number?
     }
 
     public void addX(float x){
-        xFloat = MathUtils.clamp(xFloat + x, -(offsetX*16), June15GAM.win_width - (offsetMaxX * 16));
+        xFloat = MathUtils.clamp(xFloat + x, -(offsetX*world.tileSet.tileSize), June15GAM.win_width - (offsetMaxX * world.tileSet.tileSize));
     }
 
     public void addY(float y){
-        yFloat = MathUtils.clamp(yFloat + y, -(offsetY*16), June15GAM.win_height - (offsetMaxY * 16));
+        yFloat = MathUtils.clamp(yFloat + y, -(offsetY*world.tileSet.tileSize), June15GAM.win_height - (offsetMaxY * world.tileSet.tileSize));
     }
 
     public boolean place(TileMap map){

@@ -18,7 +18,8 @@ public class WallPiece extends MoveableObject{
 
     private boolean[][] pieceMap;
 
-    public WallPiece () {
+    public WallPiece (TileMap world) {
+        super(world);
         createNewPiece();
 
     }

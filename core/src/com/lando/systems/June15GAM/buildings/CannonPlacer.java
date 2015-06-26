@@ -16,6 +16,7 @@ public class CannonPlacer extends MoveableObject {
     private int numberToPlace = 0;
 
     public CannonPlacer(TileMap world){
+        super(world);
         int internalTiles = world.numberOfInternalTiles();
         numberToPlace = 2 + (int)MathUtils.log(4, internalTiles);
     }
