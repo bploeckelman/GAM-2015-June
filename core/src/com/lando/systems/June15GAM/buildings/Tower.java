@@ -2,6 +2,7 @@ package com.lando.systems.June15GAM.buildings;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.lando.systems.June15GAM.buildings.Building;
+import com.lando.systems.June15GAM.tilemap.TileMap;
 import com.lando.systems.June15GAM.tilemap.TileTexture;
 
 /**
@@ -13,9 +14,11 @@ public class Tower extends Building {
 
     float shotDelay;
     float shotTimer;
+    public boolean onInternal;
 
     public Tower(int x, int y){
         super(x,y);
+        onInternal = true;
         texture = TileTexture.CANNON_READY;
         shotDelay = default_shot_delay;
         shotTimer = 0f;
@@ -32,7 +35,7 @@ public class Tower extends Building {
     }
 
     public boolean canFire() {
-        return (shotTimer <= 0f);
+        return (shotTimer <= 0f && onInternal);
     }
 
     public void enableShot() {

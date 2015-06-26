@@ -507,6 +507,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         for (Tower tower : tileMap.getTowers()) {
             if (tower.canFire()) {
                 tower.fire();
+                tileMap.getTowers().remove(tower);
+                tileMap.getTowers().addLast(tower);
+
                 Cannonball cannonball = cannonballPool.obtain();
                 cannonball.init(tower.x * tile_size + half_tile_size / 2f,
                                 tower.y * tile_size + half_tile_size / 2f,

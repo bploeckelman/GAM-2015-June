@@ -10,6 +10,7 @@ import com.lando.systems.June15GAM.screens.GameplayScreen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Brian Ploeckelman created on 5/12/2015.
@@ -29,7 +30,7 @@ public class TileMap {
 
     private Keep homeKeep;
     public MoveableObject tetris;
-    private ArrayList<Tower> towers;
+    private LinkedList<Tower> towers;
     private int mapSeed;
 
 
@@ -60,7 +61,7 @@ public class TileMap {
                 }
             }
         }
-        towers = new ArrayList<Tower>();
+        towers = new LinkedList<Tower>();
 
         // TODO: hackity hack hack... come up with a better way of placing keeps
         final int mid = width / 2 - 1;
@@ -142,7 +143,7 @@ public class TileMap {
         return walls;
     }
 
-    public ArrayList<Tower> getTowers(){
+    public LinkedList<Tower> getTowers(){
         return towers;
     }
 
@@ -253,6 +254,11 @@ public class TileMap {
                 }
             }
 
+        }
+
+        for (int i = 0; i < towers.size(); i++){
+            Tower t = towers.get(i);
+            t.onInternal = tiles[t.y][t.x].type == TileType.INTERIOR;
         }
 
     }
