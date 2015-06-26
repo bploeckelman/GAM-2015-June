@@ -85,7 +85,11 @@ public class TileMap {
             for (int x = 0; x < tiles[y].length; ++x) {
                 final TextureRegion tile = tileSet.textures.get(tiles[y][x].texture);
                 if (tiles[y][x].type == TileType.INTERIOR) {
-                    batch.setColor(Color.LIGHT_GRAY);
+                    if ((x + y) %2 == 0) {
+                        batch.setColor(new Color(0.75f, 0.75f, 0.75f, 1));
+                    } else {
+                        batch.setColor(new Color(0.70f, 0.70f, 0.70f, 1));
+                    }
                 }
                 batch.draw(tile, x * tileSet.tileSize, y * tileSet.tileSize);
                 batch.setColor(Color.WHITE);
