@@ -21,7 +21,7 @@ import com.lando.systems.June15GAM.weapons.Cannonball;
 public class Ship {
 
     public static final float FRAME_DURATION = 0.2f;
-    public static final float SPEED = 16f;
+//    public static final float SPEED = 16f;
     public static final float SHOT_COOLDOWN = 5f;
 
     // TODO: different animations for different direction
@@ -37,14 +37,17 @@ public class Ship {
     public BreadCrumb targetPosition;
     public TileMap world;
     public int score;
+    public int level;
+    public float speed;
     protected float cannonballSpeed;
 
     final TextureRegion targetTexture;
 
-    public Ship(TileMap world, float x, float y, float w, float h) {
-        score = 100; // Could be overridden if we make more types
-        cannonballSpeed = 75; // ditto
-
+    public Ship(TileMap world, float x, float y, float w, float h, int level) {
+        score = 100 + (50 * level); // Could be overridden if we make more types
+        cannonballSpeed = 75 + (level * 10); // ditto
+        speed = 16 + (4 * level);
+        this.level = level;
         shotTimer = MathUtils.random(4f) + 2;
         this.world = world;
         this.animation = new Animation(Ship.FRAME_DURATION,
@@ -73,7 +76,7 @@ public class Ship {
         animTimer += delta;
 
         //position.add(velocity.x * delta, velocity.y * delta);
-        float movementLeft = delta * SPEED;
+        float movementLeft = delta * speed;
         while (movementLeft > 0){
             if (targetPosition == null){
                 targetPosition = newTarget();

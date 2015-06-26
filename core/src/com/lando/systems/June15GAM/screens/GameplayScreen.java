@@ -56,7 +56,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     final float        attackTimer = 30;
     final float        buildTimer = 25;
     final float        phaseEntryDelayTime = 2;
-    final int          numShipsToAdd = 3;
+    int                numShipsToAdd = 2;
 
     GlyphLayout layout = new GlyphLayout();
 
@@ -85,6 +85,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     public GameplayScreen(June15GAM game) {
         this.game = game;
         score = 0;
+        numShips = 2;
+        numShipsToAdd = 3;
         mouseScreenPos = new Vector3();
         mouseWorldPos = new Vector3();
         sceneFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, June15GAM.win_width, June15GAM.win_height, false);
@@ -422,7 +424,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             ships.clear();
         }
 
-        numShips += numShipsToAdd;
+        numShips = (int)Math.pow(numShipsToAdd, (turn + 1));
 
         final float tile_size = tileMap.tileSet.tileSize;
         for (int i = 0; i < numShips; ++i) {
@@ -430,7 +432,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             int ty = tileMap.tiles.length - 1;
             float w = tile_size * 1.5f;
             float h = tile_size * 1.5f;
-            Ship ship = new Ship(tileMap, tx * tile_size, ty * tile_size, w, h);
+            Ship ship = new Ship(tileMap, tx * tile_size, ty * tile_size, w, h, turn + 1);
             ships.add(ship);
         }
     }
