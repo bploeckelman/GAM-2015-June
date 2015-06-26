@@ -35,10 +35,12 @@ public class Ship {
     public Vector2   shotTarget;
     public BreadCrumb targetPosition;
     public TileMap world;
+    public int score;
 
     final TextureRegion targetTexture;
 
     public Ship(TileMap world, float x, float y, float w, float h) {
+        score = 100; // Could be overridden if we make more types
         shotTimer = MathUtils.random(4f) + 2;
         this.world = world;
         this.animation = new Animation(Ship.FRAME_DURATION,

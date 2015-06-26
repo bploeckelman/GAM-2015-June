@@ -84,7 +84,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     public GameplayScreen(June15GAM game) {
         this.game = game;
-
+        score = 0;
         mouseScreenPos = new Vector3();
         mouseWorldPos = new Vector3();
         sceneFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, June15GAM.win_width, June15GAM.win_height, false);
@@ -155,6 +155,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         String timerString = "Time Left: " + (int)Math.max(Math.ceil(phaseTimer), 0);
         layout.setText(font, timerString);
         font.draw(batch, timerString, camera.viewportWidth - (layout.width + 30), camera.viewportHeight - 10);
+
+        String scoreString = "Score: " + score;
+        //layout.setText(font, scoreString);
+        font.draw(batch, scoreString, 30, camera.viewportHeight - 10);
+
         float x = 10f;
         int i = 1;
         for (Tower tower : tileMap.getTowers()) {
@@ -378,6 +383,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                         shipGotHit = true;
                         // TODO: moar kaboom
                         ships.removeIndex(s);
+                        score += ship.score;
                         effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
                     }
                 }
