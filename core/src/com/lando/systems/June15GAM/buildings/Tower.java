@@ -10,7 +10,7 @@ import com.lando.systems.June15GAM.tilemap.TileTexture;
  */
 public class Tower extends Building {
 
-    static final float default_shot_delay = 2f;
+    static final float default_shot_delay = 4f;
 
     float shotDelay;
     float shotTimer;

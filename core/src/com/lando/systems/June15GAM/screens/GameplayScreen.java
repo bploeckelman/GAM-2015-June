@@ -239,7 +239,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         // TODO: switch to attack phase based on some condition (timer? done placing wall sections?)
         if (phaseTimer <= 0){
             tileMap.setInternal();
-            if (tileMap.hasInternalTiles()) {
+            if (!tileMap.isGameLost()) {
                 phase = Gameplay.CANNON;
                 phaseTimer = cannonTimer;
                 tileMap.tetris = new CannonPlacer(3); // TODO: should be based on number of interior tiles
@@ -408,7 +408,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         tileMap.destroyBuildingAt(tileHitX, tileHitY);
         if (hitTileType != TileType.WATER) {
             tileMap.tiles[tileHitY][tileHitX].type = TileType.GROUND;
-            tileMap.tiles[tileHitY][tileHitX].texture = TileTexture.GROUND_SAND;
+            tileMap.tiles[tileHitY][tileHitX].texture = TileTexture.GROUND_GRASS;
         }
         effectsManager.newEffect(effectType, cannonball.target.x, cannonball.target.y);
     }

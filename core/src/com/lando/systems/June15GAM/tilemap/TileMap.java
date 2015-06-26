@@ -21,14 +21,13 @@ public class TileMap {
 
     public TileSet  tileSet;
     public Tile[][] tiles;
-    public boolean gameLost;
     public  int width;
     public  int height;
 
     public HashMap<Integer, Building> buildings;
     private int castleRadius = 2;
 
-    private Keep homeKeep;
+    private ArrayList<Keep> keeps;
     public MoveableObject tetris;
     private LinkedList<Tower> towers;
     private int mapSeed;
@@ -38,8 +37,8 @@ public class TileMap {
         this.tileSet = tileSet;
         tetris = new CannonPlacer(NUM_STARTER_CANNONS);
         mapSeed = MathUtils.random(1000);
-        gameLost = false;
         buildings = new HashMap<Integer, Building>();
+        keeps = new ArrayList<Keep>();
         width = xTiles;
         height = yTiles;
         tileSet = new TileSetOverhead();
@@ -70,8 +69,12 @@ public class TileMap {
         final int ypos = 5;
 
         makeStarterCastle(mid, ypos);
-        buildings.put(left  + ypos * width, new Keep(left, ypos));
-        buildings.put(right + ypos * width, new Keep(right, ypos));
+        Keep leftKeep = new Keep(left, ypos);
+        Keep rightKeep = new Keep(right, ypos);
+        keeps.add(leftKeep);
+        keeps.add(rightKeep);
+        buildings.put(left  + ypos * width, leftKeep);
+        buildings.put(right + ypos * width, rightKeep);
 
         setInternal();
         reconcileWalls();
@@ -275,14 +278,24 @@ public class TileMap {
         return false;
     }
 
+    public boolean isGameLost(){
+        for (int i = 0; i < keeps.size(); i++){
+            Keep k = keeps.get(i);
+            if (tiles[k.y][k.x].type == TileType.INTERIOR){
+                return false;
+            }
+        }
+        return true;
+    }
+
     private boolean inBounds(int x, int y){
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
     private void makeStarterCastle(int x, int y){
-        homeKeep = new Keep(x, y);
+        Keep homeKeep = new Keep(x, y);
         buildings.put(x + y * width, homeKeep);
-
+        keeps.add(homeKeep);
         for (int i = -castleRadius; i <= castleRadius; i++){
             setWall(x - castleRadius, y + i);
             setWall(x + castleRadius, y + i);

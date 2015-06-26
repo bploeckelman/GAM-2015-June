@@ -36,11 +36,14 @@ public class Ship {
     public BreadCrumb targetPosition;
     public TileMap world;
     public int score;
+    protected float cannonballSpeed;
 
     final TextureRegion targetTexture;
 
     public Ship(TileMap world, float x, float y, float w, float h) {
         score = 100; // Could be overridden if we make more types
+        cannonballSpeed = 75; // ditto
+
         shotTimer = MathUtils.random(4f) + 2;
         this.world = world;
         this.animation = new Animation(Ship.FRAME_DURATION,
@@ -141,7 +144,7 @@ public class Ship {
     }
 
     public void shoot(TileMap tileMap, Pool<Cannonball> cannonballPool, Array<Cannonball> activeCannonballs) {
-        shotTimer = MathUtils.random(2f) + SHOT_COOLDOWN;
+        shotTimer = MathUtils.random(4f) + SHOT_COOLDOWN;
 
         final int numWalls = tileMap.getWalls().size();
         if (numWalls == 0) return;
@@ -150,7 +153,6 @@ public class Ship {
         final float half_tile_size = tile_size / 2f;
         final int wallIndex = MathUtils.random(0, numWalls - 1);
         final Wall wall = tileMap.getWalls().get(wallIndex);
-        final float speed = 40f;
 
         Cannonball cannonball = cannonballPool.obtain();
         cannonball.init(position.x + half_tile_size / 2f,
@@ -158,7 +160,7 @@ public class Ship {
                         wall.x * tile_size + half_tile_size,
                         wall.y * tile_size + half_tile_size,
                         half_tile_size, half_tile_size,
-                        speed);
+                        cannonballSpeed);
         cannonball.source = Cannonball.Source.SHIP;
         activeCannonballs.add(cannonball);
     }
