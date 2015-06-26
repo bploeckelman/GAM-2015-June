@@ -216,9 +216,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 phase = Gameplay.CANNON;
                 phaseTimer = cannonTimer;
                 tileMap.tetris = new CannonPlacer(3); // TODO: This should be based on something
+                clearCannonballs();
             } else {
                 phase = Gameplay.ATTACK;
                 phaseTimer = attackTimer;
+                clearCannonballs();
             }
             phaseActive = false;
             phaseEntryTimer = phaseEntryDelayTime;
@@ -273,6 +275,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             phaseTimer = attackTimer;
             phaseActive = false;
             phaseEntryTimer = phaseEntryDelayTime;
+            clearCannonballs();
         }
     }
 
@@ -310,6 +313,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             phaseEntryTimer = phaseEntryDelayTime;
             turn++;
             tileMap.tetris = new WallPiece();
+            clearCannonballs();
         }
     }
 
@@ -400,6 +404,13 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             Ship ship = new Ship(tx * tile_size, ty * tile_size, w, h);
             ships.add(ship);
         }
+    }
+
+    private void clearCannonballs() {
+        for (Cannonball cannonball : activeCannonballs) {
+            cannonballPool.free(cannonball);
+        }
+        activeCannonballs.clear();
     }
 
     // ------------------------------------------------------------------------
