@@ -10,10 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
@@ -44,6 +41,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     OrthographicCamera camera;
     BitmapFont         font;
     EffectsManager     effectsManager;
+    Rectangle          intersection;
 
     Rectangle          placeButtonRect;
     Rectangle          rotateButtonRect;
@@ -95,6 +93,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         font.setColor(Color.WHITE);
         font.getData().setScale(2f);
         effectsManager = new EffectsManager();
+        intersection = new Rectangle();
 
         phaseEntryTimer = 1;
         phase = Gameplay.CANNON;
@@ -348,7 +347,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 boolean shipGotHit = false;
                 for (int s = ships.size - 1; s >= 0; --s) {
                     final Ship ship = ships.get(s);
-                    if (cannonball.position.epsilonEquals(ship.position, tileMap.tileSet.tileSize / 2f)) {
+                    if (Intersector.intersectRectangles(cannonball.bounds, ship.bounds, intersection)) {
                         shipGotHit = true;
                         // TODO: moar kaboom
                         ships.removeIndex(s);

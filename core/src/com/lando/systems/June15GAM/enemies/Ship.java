@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -25,6 +26,7 @@ public class Ship {
     public Animation animation;
     public float     animTimer;
     public float     shotTimer;
+    public Rectangle bounds;
     public Vector2   position;
     public Vector2   velocity;
     public Vector2   size;
@@ -38,6 +40,7 @@ public class Ship {
                                        Assets.vehicleRegions[1][2],
                                        Assets.vehicleRegions[1][3]);
         this.animation.setPlayMode(Animation.PlayMode.LOOP);
+        this.bounds = new Rectangle(x, y, w, h);
         this.position = new Vector2(x, y);
         this.velocity = new Vector2(0, 0);
         this.size = new Vector2(w, h);
@@ -59,13 +62,14 @@ public class Ship {
         // TODO: switch animations based on movement direction
         animTimer += delta;
         position.add(velocity.x * delta, velocity.y * delta);
+        bounds.setPosition(position);
     }
 
     public void render(SpriteBatch batch) {
         batch.draw(animation.getKeyFrame(animTimer), position.x, position.y, size.x, size.y);
-        batch.draw(targetTexture,
-                   moveTarget.x - targetTexture.getRegionWidth()  / 2f,
-                   moveTarget.y - targetTexture.getRegionHeight() / 2f);
+//        batch.draw(targetTexture,
+//                   moveTarget.x - targetTexture.getRegionWidth()  / 2f,
+//                   moveTarget.y - targetTexture.getRegionHeight() / 2f);
     }
 
     public boolean reachedTarget() {
