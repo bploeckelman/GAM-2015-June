@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Pool;
 import com.lando.systems.June15GAM.Assets;
 import com.lando.systems.June15GAM.buildings.Wall;
 import com.lando.systems.June15GAM.tilemap.TileMap;
+import com.lando.systems.June15GAM.tilemap.TileType;
 import com.lando.systems.June15GAM.weapons.Cannonball;
 
 /**
@@ -32,10 +33,13 @@ public class Ship {
     public Vector2   size;
     public Vector2   moveTarget;
     public Vector2   shotTarget;
+    public BreadCrumb targetPosition;
+    public TileMap world;
 
     final TextureRegion targetTexture;
 
-    public Ship(float x, float y, float w, float h) {
+    public Ship(TileMap world, float x, float y, float w, float h) {
+        this.world = world;
         this.animation = new Animation(Ship.FRAME_DURATION,
                                        Assets.vehicleRegions[1][2],
                                        Assets.vehicleRegions[1][3]);
@@ -47,6 +51,7 @@ public class Ship {
         this.moveTarget = new Vector2(x, y);
         this.shotTarget = new Vector2(0, 0);
         this.animTimer = 0;
+
 
         targetTexture = Assets.effectsRegions[1][2];
     }
@@ -61,7 +66,34 @@ public class Ship {
 
         // TODO: switch animations based on movement direction
         animTimer += delta;
-        position.add(velocity.x * delta, velocity.y * delta);
+
+        //position.add(velocity.x * delta, velocity.y * delta);
+        float movementLeft = delta * SPEED;
+        while (movementLeft > 0){
+            if (targetPosition == null){
+                targetPosition = newTarget();
+            }
+            if (targetPosition != null) {
+                float targetX = targetPosition.x * world.tileSet.tileSize;
+                float targetY = targetPosition.y * world.tileSet.tileSize;
+
+                double dist = Math.sqrt(Math.pow(targetX - position.x, 2) + Math.pow(targetY - position.y, 2));
+                if (dist < movementLeft) {
+                    movementLeft -= dist;
+                    position.x = targetX;
+                    position.y = targetY;
+                    targetPosition = targetPosition.next;
+                } else {
+                    float dirX = (float)((targetX - position.x)/dist);
+                    float dirY = (float)((targetY - position.y)/dist);
+                    position.x += dirX * movementLeft;
+                    position.y += dirY * movementLeft;
+                    movementLeft = 0;
+                }
+            }
+
+
+        }
         bounds.setPosition(position);
     }
 
@@ -72,26 +104,36 @@ public class Ship {
 //                   moveTarget.y - targetTexture.getRegionHeight() / 2f);
     }
 
-    public boolean reachedTarget() {
-        return (position.epsilonEquals(moveTarget, (size.x + size.y) / 4f));
+    private BreadCrumb newTarget(){
+        int x = MathUtils.random(world.width);
+        int y = MathUtils.random(world.height);
+        while (world.getTileType(x, y) != TileType.WATER){
+            x = MathUtils.random(world.width);
+            y = MathUtils.random(world.height);
+        }
+        return Pathfinder.FindPath(world, x, y, (int)(position.x/world.tileSet.tileSize), (int)(position.y/world.tileSet.tileSize));
     }
 
-    public void setNewTarget(TileMap tileMap) {
-        // TODO: pick new water tile target (reachable from current location) move this stuff into ship? or move ships into tilemap?
-        final float tile_size = tileMap.tileSet.tileSize;
-        final float map_width = tileMap.tiles[0].length;
-        final float map_height = tileMap.tiles.length;
+//    public boolean reachedTarget() {
+//        return (position.epsilonEquals(moveTarget, (size.x + size.y) / 4f));
+//    }
 
-        final float minX = 1;
-        final float maxX = map_width - 1;
-        final float minY = map_height * 2f / 3f + 1;
-        final float maxY = map_height - 1;
-
-        moveTarget.set(MathUtils.random(minX, minY) * tile_size, MathUtils.random(minY, maxY) * tile_size);
-
-        velocity.set(moveTarget.x - position.x, moveTarget.y - position.y);
-        velocity.nor().scl(SPEED);
-    }
+//    public void setNewTarget(TileMap tileMap) {
+//        // TODO: pick new water tile target (reachable from current location) move this stuff into ship? or move ships into tilemap?
+//        final float tile_size = tileMap.tileSet.tileSize;
+//        final float map_width = tileMap.tiles[0].length;
+//        final float map_height = tileMap.tiles.length;
+//
+//        final float minX = 1;
+//        final float maxX = map_width - 1;
+//        final float minY = map_height * 2f / 3f + 1;
+//        final float maxY = map_height - 1;
+//
+//        moveTarget.set(MathUtils.random(minX, minY) * tile_size, MathUtils.random(minY, maxY) * tile_size);
+//
+//        velocity.set(moveTarget.x - position.x, moveTarget.y - position.y);
+//        velocity.nor().scl(SPEED);
+//    }
 
     public boolean canShoot() {
         return shotTimer >= SHOT_COOLDOWN;

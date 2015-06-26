@@ -21,11 +21,12 @@ public class TileMap {
     public TileSet  tileSet;
     public Tile[][] tiles;
     public boolean gameLost;
+    public  int width;
+    public  int height;
 
     public HashMap<Integer, Building> buildings;
     private int castleRadius = 2;
-    private int width;
-    private int height;
+
     private Keep homeKeep;
     public MoveableObject tetris;
     private ArrayList<Tower> towers;

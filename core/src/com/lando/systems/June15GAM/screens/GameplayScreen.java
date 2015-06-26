@@ -288,9 +288,6 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         for (Ship ship : ships) {
             ship.update(delta);
 
-            if (ship.reachedTarget()) {
-                ship.setNewTarget(tileMap);
-            }
 
             if (ship.canShoot() && phaseTimer > 0f) {
                 ship.shoot(tileMap, cannonballPool, activeCannonballs);
@@ -407,7 +404,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             int ty = tileMap.tiles.length - 1;
             float w = tile_size * 1.5f;
             float h = tile_size * 1.5f;
-            Ship ship = new Ship(tx * tile_size, ty * tile_size, w, h);
+            Ship ship = new Ship(tileMap, tx * tile_size, ty * tile_size, w, h);
             ships.add(ship);
         }
     }
