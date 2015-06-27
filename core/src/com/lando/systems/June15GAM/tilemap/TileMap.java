@@ -168,15 +168,18 @@ public class TileMap {
         return null;
     }
 
-    public void destroyBuildingAt(int x, int y){
+    public boolean destroyBuildingAt(int x, int y){
+        boolean didDestroy = false;
         Building building = buildings.get(x + y * width);
         if (building != null) {
             buildings.put(x + y * width, null);
             if (building instanceof Tower) {
                 towers.remove(building);
+                didDestroy = true;
             }
         }
         reconcileWalls();
+        return didDestroy;
     }
 
     public void reconcileWalls(){

@@ -19,6 +19,7 @@ import com.lando.systems.June15GAM.June15GAM;
 import com.lando.systems.June15GAM.buildings.Building;
 import com.lando.systems.June15GAM.buildings.CannonPlacer;
 import com.lando.systems.June15GAM.buildings.Tower;
+import com.lando.systems.June15GAM.cameras.Shake;
 import com.lando.systems.June15GAM.effects.Effect;
 import com.lando.systems.June15GAM.effects.EffectsManager;
 import com.lando.systems.June15GAM.enemies.Ship;
@@ -31,6 +32,11 @@ import com.lando.systems.June15GAM.weapons.Cannonball;
  */
 public class GameplayScreen extends ScreenAdapter implements GestureDetector.GestureListener {
 
+    private static final float SHAKE_AMOUNT_SHIP_DESTROYED = 0.4f;
+    private static final float SHAKE_AMOUNT_GROUND_HIT     = 0.2f;
+    private static final float SHAKE_AMOUNT_PLAYER_FIRES   = 0.15f;
+    private static final float SHAKE_AMOUNT_PLACE_WALL     = 0.2f;
+
     // TODO: move to June15GAM class as static globals?
     public static Vector3 mouseScreenPos;
     public static Vector3 mouseWorldPos;
@@ -40,6 +46,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     SpriteBatch        batch;
     TextureRegion      sceneRegion;
     OrthographicCamera camera;
+    Shake              shake;
     BitmapFont         font;
     EffectsManager     effectsManager;
     Rectangle          intersection;
@@ -96,6 +103,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         camera = new OrthographicCamera(June15GAM.win_width, June15GAM.win_height);
         camera.translate(June15GAM.win_width / 2f, June15GAM.win_height / 2f);
         camera.update();
+        shake = new Shake();
         font = new BitmapFont();
         font.setColor(Color.WHITE);
         font.getData().setScale(2f);
@@ -131,6 +139,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     @Override
     public void render(float delta) {
         update(delta);
+        shake.update(delta, camera, camera.viewportWidth / 2f, camera.viewportHeight / 2f);
 
         sceneFrameBuffer.begin();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -394,6 +403,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                         ships.removeIndex(s);
                         score += ship.score;
                         effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
+                        shake.shake(SHAKE_AMOUNT_SHIP_DESTROYED);
                     }
                 }
 
@@ -420,6 +430,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             tileMap.tiles[tileHitY][tileHitX].texture = TileTexture.GROUND_GRASS;
         }
         effectsManager.newEffect(effectType, cannonball.target.x, cannonball.target.y);
+        // TODO: different shake when a wall is hit
+        shake.shake(SHAKE_AMOUNT_GROUND_HIT);
     }
 
     private void spawnShips() {
@@ -486,21 +498,26 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
         if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
             tileMap.tetris.place(tileMap);
+            shake.shake(SHAKE_AMOUNT_PLACE_WALL);
             return;
         }
         if (rotateButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
             tileMap.tetris.rotate(WallPiece.R.C);
+            shake.shake(SHAKE_AMOUNT_PLACE_WALL);
             return;
         }
         tileMap.tetris.place(tileMap);
+        shake.shake(SHAKE_AMOUNT_PLACE_WALL);
     }
 
     private void tapCannon(){
         if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
             tileMap.tetris.place(tileMap);
+            shake.shake(SHAKE_AMOUNT_PLACE_WALL);
             return;
         }
         tileMap.tetris.place(tileMap);
+        shake.shake(SHAKE_AMOUNT_PLACE_WALL);
     }
 
     private void tapAttack(){
@@ -528,6 +545,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                                 speed);
                 cannonball.source = Cannonball.Source.TOWER;
                 activeCannonballs.add(cannonball);
+                shake.shake(SHAKE_AMOUNT_PLAYER_FIRES);
                 break;
             }
         }
