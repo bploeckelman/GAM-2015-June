@@ -192,11 +192,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         // UI stuff
         batch.begin();
         if (phase != Gameplay.ATTACK) {
-            batch.draw(Assets.placeButtonTexture, placeButtonRect.x, placeButtonRect.y, placeButtonRect.width, placeButtonRect.height);
+            batch.draw(Assets.spritesheetRegions[2][0], placeButtonRect.x, placeButtonRect.y, placeButtonRect.width, placeButtonRect.height);
             tileMap.tetris.render(tileMap, batch);
         }
         if (phase == Gameplay.BUILD)
-            batch.draw(Assets.placeButtonTexture, rotateButtonRect.x, rotateButtonRect.y, rotateButtonRect.width, rotateButtonRect.height);
+            batch.draw(Assets.spritesheetRegions[2][2], rotateButtonRect.x, rotateButtonRect.y, rotateButtonRect.width, rotateButtonRect.height);
 
         if (phase == Gameplay.GAMEOVER) {
             font.getData().setScale(3);
