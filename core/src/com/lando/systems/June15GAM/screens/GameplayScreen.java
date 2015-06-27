@@ -543,7 +543,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                                 mouseWorldPos.y,
                                 half_tile_size, half_tile_size,
                                 speed);
-                cannonball.source = Cannonball.Source.TOWER;
+                cannonball.setSource(Cannonball.Source.TOWER);
                 activeCannonballs.add(cannonball);
                 shake.shake(SHAKE_AMOUNT_PLAYER_FIRES);
                 break;

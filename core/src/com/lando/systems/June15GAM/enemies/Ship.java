@@ -173,7 +173,7 @@ public class Ship {
                         building.y * tile_size + half_tile_size,
                         half_tile_size, half_tile_size,
                         cannonballSpeed);
-        cannonball.source = Cannonball.Source.SHIP;
+        cannonball.setSource(Cannonball.Source.SHIP);
         activeCannonballs.add(cannonball);
     }
 
