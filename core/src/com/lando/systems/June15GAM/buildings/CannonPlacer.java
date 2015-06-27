@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.lando.systems.June15GAM.Assets;
 import com.lando.systems.June15GAM.tilemap.TileMap;
 import com.lando.systems.June15GAM.tilemap.TileTexture;
 import com.lando.systems.June15GAM.tilemap.TileType;
@@ -30,10 +31,7 @@ public class CannonPlacer extends MoveableObject {
     public void render(TileMap map, SpriteBatch batch){
         if (isValidPlacement(map)) batch.setColor(1,1,1,.7f);
         else batch.setColor(1,0,0,.5f);
-
-        final TextureRegion tile = map.tileSet.textures.get(TileTexture.ROAD_FOURWAY);
-        batch.draw(tile, getTileX() * map.tileSet.tileSize, getTileY() * map.tileSet.tileSize, map.tileSet.tileSize, map.tileSet.tileSize);
-
+        batch.draw(Assets.spritesheetRegions[1][0], getTileX() * map.tileSet.tileSize, getTileY() * map.tileSet.tileSize, map.tileSet.tileSize, map.tileSet.tileSize);
         // TODO: display how many are left to place
         batch.setColor(Color.WHITE);
     }
