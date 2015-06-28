@@ -164,22 +164,26 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         // Draw user interface overlays
 //        font.draw(batch, "Turn #" + turn + ": " + phase.name(), 10, camera.viewportHeight - 10);
         String timerString = "Time Left: " + (int)Math.max(Math.ceil(phaseTimer), 0);
+        font.getData().setScale(2f);
         layout.setText(font, timerString);
         font.draw(batch, timerString, camera.viewportWidth - (layout.width + 30), camera.viewportHeight - 10);
 
-        String scoreString = "Score: " + score;
-        //layout.setText(font, scoreString);
-        font.draw(batch, scoreString, 30, camera.viewportHeight - 10);
-
-        float x = 10f;
-        int i = 1;
-        for (Tower tower : tileMap.getTowers()) {
-            if (tower.canFire()) {
-                font.draw(batch, "" + i, x, 32);
-            }
-            x += 32f;
-            ++i;
+        if (phase == Gameplay.ATTACK || phase == Gameplay.GAMEOVER) {
+            final String scoreString = "Points: " + score;
+            font.getData().setScale(1.5f);
+            layout.setText(font, scoreString);
+            font.draw(batch, scoreString, 10, layout.height + 10f);
         }
+
+        final float y = camera.viewportHeight - Assets.spritesheetRegions[2][3].getRegionHeight() - 10f;
+        float x = 10f;
+        for (Tower tower : tileMap.getTowers()) {
+            final Color color = tower.canFire() ? Color.GREEN : Color.RED;
+            batch.setColor(color);
+            batch.draw(Assets.spritesheetRegions[2][3], x, y);
+            x += Assets.spritesheetRegions[2][3].getRegionWidth() + 5f;
+        }
+        batch.setColor(Color.WHITE);
         batch.end();
         sceneFrameBuffer.end();
 
