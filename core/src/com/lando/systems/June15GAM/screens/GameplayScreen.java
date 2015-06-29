@@ -37,6 +37,13 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     private static final float SHAKE_AMOUNT_PLAYER_FIRES   = 0.15f;
     private static final float SHAKE_AMOUNT_PLACE_WALL     = 0.2f;
 
+    private static final float FONT_SCALE_DEFAULT  = 1f;
+    private static final float FONT_SCALE_TIMER    = 0.9f;
+    private static final float FONT_SCALE_POINTS   = 0.8f;
+    private static final float FONT_SCALE_PHASE    = 1.5f;
+    private static final float FONT_SCALE_GAMEOVER = 1.5f;
+    private static final float FONT_SCALE_TOUCH    = 0.5f;
+
     // TODO: move to June15GAM class as static globals?
     public static Vector3 mouseScreenPos;
     public static Vector3 mouseWorldPos;
@@ -104,9 +111,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         camera.translate(June15GAM.win_width / 2f, June15GAM.win_height / 2f);
         camera.update();
         shake = new Shake();
-        font = new BitmapFont();
+        font = Assets.font;
         font.setColor(Color.WHITE);
-        font.getData().setScale(2f);
+        font.getData().setScale(FONT_SCALE_DEFAULT);
         effectsManager = new EffectsManager();
         intersection = new Rectangle();
 
@@ -163,15 +170,23 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
         // Draw user interface overlays
 //        font.draw(batch, "Turn #" + turn + ": " + phase.name(), 10, camera.viewportHeight - 10);
-        String timerString = "Time Left: " + (int)Math.max(Math.ceil(phaseTimer), 0);
-        font.getData().setScale(2f);
+        final String timerStringNoMarkup = "Time Left: " + (int)Math.max(Math.ceil(phaseTimer), 0);
+        final String timerString = "[YELLOW]Time Left:[] [RED]" + (int)Math.max(Math.ceil(phaseTimer), 0) + "[]";
+        font.getData().setScale(FONT_SCALE_TIMER);
         layout.setText(font, timerString);
-        font.draw(batch, timerString, camera.viewportWidth - (layout.width + 30), camera.viewportHeight - 10);
+        font.setColor(Color.BLACK);
+        font.draw(batch, timerStringNoMarkup, camera.viewportWidth - (layout.width + 5f) + 2f, camera.viewportHeight - 5f + 2f);
+        font.setColor(Color.WHITE);
+        font.draw(batch, timerString, camera.viewportWidth - (layout.width + 5f), camera.viewportHeight - 5f);
 
         if (phase == Gameplay.ATTACK || phase == Gameplay.GAMEOVER) {
-            final String scoreString = "Points: " + score;
-            font.getData().setScale(1.5f);
+            final String scoreStringNoMarkup = "Points: " + score;
+            final String scoreString = "[YELLOW]Points:[] [GREEN]" + score + "[]";
+            font.getData().setScale(FONT_SCALE_POINTS);
             layout.setText(font, scoreString);
+            font.setColor(Color.BLACK);
+            font.draw(batch, scoreStringNoMarkup, 10 + 2f, layout.height + 10f + 2f);
+            font.setColor(Color.WHITE);
             font.draw(batch, scoreString, 10, layout.height + 10f);
         }
 
@@ -203,18 +218,18 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             batch.draw(Assets.spritesheetRegions[2][2], rotateButtonRect.x, rotateButtonRect.y, rotateButtonRect.width, rotateButtonRect.height);
 
         if (phase == Gameplay.GAMEOVER) {
-            font.getData().setScale(3);
+            font.getData().setScale(FONT_SCALE_GAMEOVER);
             final String text = "Game Over, You're Bad at Life!";
             layout.setText(font, text);
             font.draw(batch, text, (camera.viewportWidth - layout.width) / 2f, (camera.viewportHeight + layout.height) / 2f);
-            font.getData().setScale(2);
+            font.getData().setScale(FONT_SCALE_DEFAULT);
         }
 
         if (!phaseActive && phase != Gameplay.GAMEOVER){
-            font.getData().setScale(5);
+            font.getData().setScale(FONT_SCALE_PHASE);
             layout.setText(font, phase.name() + " Phase!");
             font.draw(batch, phase.name() + " Phase!", (camera.viewportWidth - layout.width) / 2, (camera.viewportHeight + layout.height) /2);
-            font.getData().setScale(2);
+            font.getData().setScale(FONT_SCALE_TOUCH);
             if (phaseEntryTimer <= 0) {
                 layout.setText(font, "Touch to Start");
                 font.draw(batch, "Touch to Start", (camera.viewportWidth - layout.width) / 2, (camera.viewportHeight + layout.height) / 2 - 50);
@@ -304,7 +319,6 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     @Override
     public void dispose() {
-        font.dispose();
         batch.dispose();
         sceneFrameBuffer.dispose();
     }

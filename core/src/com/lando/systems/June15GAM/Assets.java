@@ -41,7 +41,8 @@ public class Assets {
     public static Animation keepAnim;
 
     public static void load() {
-        font = new BitmapFont();
+        font = new BitmapFont(Gdx.files.internal("fonts/zorque.fnt"));
+        font.getData().markupEnabled = true;
 
         menuBackgroundShader = compileShaderProgram(Gdx.files.internal("shaders/default.vert"),
                                                     Gdx.files.internal("shaders/menu.frag"));
