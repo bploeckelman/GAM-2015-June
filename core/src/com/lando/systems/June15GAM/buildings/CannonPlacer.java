@@ -31,7 +31,7 @@ public class CannonPlacer extends MoveableObject {
     Color       placementColor = new Color();
 
     public void render(TileMap map, SpriteBatch batch) {
-        if (isValidPlacement(map)) placementColor.set(1, 1, 1, .7f);
+        if (isValidPlacement(map)) placementColor.set(0, 1, 0, .7f);
         else                       placementColor.set(1, 0, 0, .5f);
 
         batch.setColor(placementColor);
@@ -42,15 +42,30 @@ public class CannonPlacer extends MoveableObject {
                    map.tileSet.tileSize);
 
         // TODO: number left shouldn't be drawn here
-        final String remaining = numberToPlace + " left...";
-        Assets.font.setColor(placementColor);
-        Assets.font.getData().setScale(1.5f);
-        layout.setText(Assets.font, remaining);
-        Assets.font.draw(batch, remaining,
-                         ((map.width * map.tileSet.tileSize) - layout.width) / 2f,
-                         map.height * map.tileSet.tileSize - layout.height - 10f);
-        Assets.font.getData().setScale(1f);
+        final float SCALE_LINE_1 = 1.25f;
+        final float SCALE_LINE_2 = 2f;
+        final String line1 = "Cannons left:";
+        final String line2 = "" + numberToPlace;
 
+        Assets.font.getData().setScale(SCALE_LINE_1);
+        layout.setText(Assets.font, line1);
+        final float line1x = ((map.width * map.tileSet.tileSize) - layout.width) / 2f;
+        final float line1y = (map.height * map.tileSet.tileSize) - layout.height - 10f;
+        Assets.font.setColor(Color.BLACK);
+        Assets.font.draw(batch, line1, line1x + 2f, line1y + 2f);
+        Assets.font.setColor(Color.YELLOW);
+        Assets.font.draw(batch, line1, line1x, line1y);
+
+        Assets.font.getData().setScale(SCALE_LINE_2);
+        layout.setText(Assets.font, line2);
+        final float line2x = ((map.width * map.tileSet.tileSize) - layout.width) / 2f;
+        final float line2y = line1y - layout.height - 2f;
+        Assets.font.setColor(Color.BLACK);
+        Assets.font.draw(batch, line2, line2x + 2f, line2y + 2f);
+        Assets.font.setColor(placementColor);
+        Assets.font.draw(batch, line2, line2x, line2y);
+
+        Assets.font.getData().setScale(1f);
         Assets.font.setColor(Color.WHITE);
         batch.setColor(Color.WHITE);
     }
