@@ -19,7 +19,7 @@ public class CannonPlacer extends MoveableObject {
     public CannonPlacer(TileMap world){
         super(world);
         int internalTiles = world.numberOfInternalTiles();
-        numberToPlace = 2 + (int)MathUtils.log(4, internalTiles);
+        numberToPlace = 1 + (int)MathUtils.log(4, internalTiles);
     }
 
     public boolean isValidPlacement(TileMap tileMap) {

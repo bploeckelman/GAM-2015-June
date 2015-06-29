@@ -92,8 +92,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     public GameplayScreen(June15GAM game) {
         this.game = game;
         score = 0;
-        numShips = 2;
-        numShipsToAdd = 3;
+        numShips = 1;
+        numShipsToAdd = 2;
         mouseScreenPos = new Vector3();
         mouseWorldPos = new Vector3();
         sceneFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, June15GAM.win_width, June15GAM.win_height, false);
