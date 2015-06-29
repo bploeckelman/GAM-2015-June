@@ -63,10 +63,10 @@ public class TileMap {
         towers = new LinkedList<Tower>();
 
         // TODO: hackity hack hack... come up with a better way of placing keeps
-        final int mid = width / 2 - 1;
+        final int mid = width / 2;
         final int left = mid / 3;
         final int right = width - left;
-        final int ypos = 5;
+        final int ypos = 4;
 
         makeStarterCastle(mid, ypos);
         Keep leftKeep = new Keep(left, ypos);
