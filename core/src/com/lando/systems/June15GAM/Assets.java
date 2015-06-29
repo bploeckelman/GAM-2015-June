@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -16,6 +17,8 @@ import com.lando.systems.June15GAM.weapons.Cannonball;
  * Brian Ploeckelman created on 5/21/2015.
  */
 public class Assets {
+
+    public static BitmapFont font;
 
     public static Texture weaponsTexture;
     public static Texture vehiclesTexture;
@@ -38,6 +41,8 @@ public class Assets {
     public static Animation keepAnim;
 
     public static void load() {
+        font = new BitmapFont();
+
         menuBackgroundShader = compileShaderProgram(Gdx.files.internal("shaders/default.vert"),
                                                     Gdx.files.internal("shaders/menu.frag"));
 
@@ -102,6 +107,7 @@ public class Assets {
     }
 
     public static void dispose() {
+        font.dispose();
         menuBackgroundShader.dispose();
         effectsTexture.dispose();
         weaponsTexture.dispose();

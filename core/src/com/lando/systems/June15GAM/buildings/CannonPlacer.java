@@ -1,12 +1,11 @@
 package com.lando.systems.June15GAM.buildings;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.lando.systems.June15GAM.Assets;
 import com.lando.systems.June15GAM.tilemap.TileMap;
-import com.lando.systems.June15GAM.tilemap.TileTexture;
 import com.lando.systems.June15GAM.tilemap.TileType;
 
 /**
@@ -28,11 +27,31 @@ public class CannonPlacer extends MoveableObject {
         return true;
     }
 
-    public void render(TileMap map, SpriteBatch batch){
-        if (isValidPlacement(map)) batch.setColor(1,1,1,.7f);
-        else batch.setColor(1,0,0,.5f);
-        batch.draw(Assets.spritesheetRegions[1][0], getTileX() * map.tileSet.tileSize, getTileY() * map.tileSet.tileSize, map.tileSet.tileSize, map.tileSet.tileSize);
-        // TODO: display how many are left to place
+    GlyphLayout layout         = new GlyphLayout();
+    Color       placementColor = new Color();
+
+    public void render(TileMap map, SpriteBatch batch) {
+        if (isValidPlacement(map)) placementColor.set(1, 1, 1, .7f);
+        else                       placementColor.set(1, 0, 0, .5f);
+
+        batch.setColor(placementColor);
+        batch.draw(Assets.spritesheetRegions[1][0],
+                   getTileX() * map.tileSet.tileSize,
+                   getTileY() * map.tileSet.tileSize,
+                   map.tileSet.tileSize,
+                   map.tileSet.tileSize);
+
+        // TODO: number left shouldn't be drawn here
+        final String remaining = numberToPlace + " left...";
+        Assets.font.setColor(placementColor);
+        Assets.font.getData().setScale(1.5f);
+        layout.setText(Assets.font, remaining);
+        Assets.font.draw(batch, remaining,
+                         ((map.width * map.tileSet.tileSize) - layout.width) / 2f,
+                         map.height * map.tileSet.tileSize - layout.height - 10f);
+        Assets.font.getData().setScale(1f);
+
+        Assets.font.setColor(Color.WHITE);
         batch.setColor(Color.WHITE);
     }
 
