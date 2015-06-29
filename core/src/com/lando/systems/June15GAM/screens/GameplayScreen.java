@@ -1,5 +1,8 @@
 package com.lando.systems.June15GAM.screens;
 
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.equations.Quint;
+import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
@@ -44,6 +47,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     private static final float FONT_SCALE_GAMEOVER = 1.5f;
     private static final float FONT_SCALE_TOUCH    = 0.5f;
 
+    private static final float PHASE_OFFSET_MIN = -June15GAM.win_width;
+
     // TODO: move to June15GAM class as static globals?
     public static Vector3 mouseScreenPos;
     public static Vector3 mouseWorldPos;
@@ -57,9 +62,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     BitmapFont         font;
     EffectsManager     effectsManager;
     Rectangle          intersection;
-
     Rectangle          placeButtonRect;
     Rectangle          rotateButtonRect;
+    MutableFloat       phaseTextOffsetX;
 
     int                numShips;
     boolean            phaseActive;
@@ -69,11 +74,14 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     final float        cannonTimer = 15;
     final float        attackTimer = 30;
     final float        buildTimer = 25;
-    final float        phaseEntryDelayTime = 2;
+    final float        phaseEntryDelayTime = 1.5f;
     int                numShipsToAdd = 2;
 
     GlyphLayout layout = new GlyphLayout();
-
+    float              phaseStringX;
+    float              phaseStringY;
+    float              touchStringX;
+    float              touchStringY;
     float              deviceScaleX;
     float              deviceScaleY;
     public int         score;
@@ -121,6 +129,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         phase = Gameplay.CANNON;
         phaseTimer = cannonTimer;
         phaseActive = false;
+        phaseTextOffsetX = new MutableFloat(PHASE_OFFSET_MIN);
+        Tween.to(phaseTextOffsetX, -1, 1f)
+             .target(0)
+             .ease(Quint.OUT)
+             .start(June15GAM.tween);
         turn = 0;
 
         final TileSet tileSet = new TileSetOverhead();
@@ -218,22 +231,69 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             batch.draw(Assets.spritesheetRegions[2][2], rotateButtonRect.x, rotateButtonRect.y, rotateButtonRect.width, rotateButtonRect.height);
 
         if (phase == Gameplay.GAMEOVER) {
+            final String gameOverStringNoMarkup = "Game Over, You're Bad at Life!";
+            final String gameOverString = "[RED]Game Over[], [YELLOW]You're Bad at Life![]";
             font.getData().setScale(FONT_SCALE_GAMEOVER);
-            final String text = "Game Over, You're Bad at Life!";
-            layout.setText(font, text);
-            font.draw(batch, text, (camera.viewportWidth - layout.width) / 2f, (camera.viewportHeight + layout.height) / 2f);
+            layout.setText(font, gameOverStringNoMarkup);
+            final float gameOverX = (camera.viewportWidth  - layout.width)  / 2f + phaseTextOffsetX.floatValue();
+            final float gameOverY = (camera.viewportHeight + layout.height) / 2f;
+
+            final float margin = 110f;
+            final float w = layout.width + margin;
+            final float h = 2f * layout.height;
+            final float bgx = gameOverX - margin / 2f;
+            final float bgy = gameOverY - 1.75f * layout.height;
+            batch.setColor(Color.BLACK);
+            batch.draw(Assets.spritesheetRegions[4][0], bgx - 4f, bgy - 4f, w + 8f, h + 8f);
+            batch.setColor(Color.GRAY);
+            batch.draw(Assets.spritesheetRegions[4][0], bgx, bgy, w, h);
+            batch.setColor(Color.WHITE);
+
+            font.setColor(Color.BLACK);
+            font.draw(batch, gameOverStringNoMarkup, gameOverX + 2f, gameOverY + 2f);
+            font.setColor(Color.WHITE);
+            font.draw(batch, gameOverString, gameOverX, gameOverY);
+
             font.getData().setScale(FONT_SCALE_DEFAULT);
         }
 
         if (!phaseActive && phase != Gameplay.GAMEOVER){
+            final String phaseString = phase.name() + " Phase!";
             font.getData().setScale(FONT_SCALE_PHASE);
-            layout.setText(font, phase.name() + " Phase!");
-            font.draw(batch, phase.name() + " Phase!", (camera.viewportWidth - layout.width) / 2, (camera.viewportHeight + layout.height) /2);
-            font.getData().setScale(FONT_SCALE_TOUCH);
+            layout.setText(font, phaseString);
+            phaseStringX = (camera.viewportWidth  - layout.width)  / 2f + phaseTextOffsetX.floatValue();
+            phaseStringY = (camera.viewportHeight + layout.height) / 2f;
+
+            final float margin = 100f;
+            final float w = layout.width + margin;
+            final float h = 2f * layout.height;
+            final float bgx = phaseStringX - margin / 2f;
+            final float bgy = phaseStringY - 1.75f * layout.height;
+            batch.setColor(Color.BLACK);
+            batch.draw(Assets.spritesheetRegions[4][0], bgx - 4f, bgy - 4f, w + 8f, h + 8f);
+            batch.setColor(Color.GRAY);
+            batch.draw(Assets.spritesheetRegions[4][0], bgx, bgy, w, h);
+            batch.setColor(Color.WHITE);
+
+            font.setColor(Color.BLACK);
+            font.draw(batch, phaseString, phaseStringX + 2f, phaseStringY + 2f);
+            font.setColor(Color.CYAN);
+            font.draw(batch, phaseString, phaseStringX, phaseStringY);
+
             if (phaseEntryTimer <= 0) {
-                layout.setText(font, "Touch to Start");
-                font.draw(batch, "Touch to Start", (camera.viewportWidth - layout.width) / 2, (camera.viewportHeight + layout.height) / 2 - 50);
+                final String touchString = "Touch to Start...";
+                font.getData().setScale(FONT_SCALE_TOUCH);
+                layout.setText(font, touchString);
+                touchStringX = (camera.viewportWidth  - layout.width)  / 2f + phaseTextOffsetX.floatValue();
+                touchStringY = (camera.viewportHeight + layout.height) / 2f - 35f;
+                font.setColor(Color.BLACK);
+                font.draw(batch, touchString, touchStringX + 2f, touchStringY + 2f);
+                font.setColor(Color.GREEN);
+                font.draw(batch, touchString, touchStringX, touchStringY);
             }
+
+            font.getData().setScale(FONT_SCALE_DEFAULT);
+            font.setColor(Color.WHITE);
         }
         batch.end();
     }
@@ -279,11 +339,21 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             if (!tileMap.isGameLost()) {
                 phase = Gameplay.CANNON;
                 phaseTimer = cannonTimer;
+                phaseTextOffsetX.setValue(PHASE_OFFSET_MIN);
+                Tween.to(phaseTextOffsetX, -1, 1f)
+                     .target(0)
+                     .ease(Quint.OUT)
+                     .start(June15GAM.tween);
                 tileMap.tetris = new CannonPlacer(tileMap); // TODO: should be based on number of interior tiles
                 clearCannonballs();
                 resetCannons();
             } else {
                 phase = Gameplay.GAMEOVER;
+                phaseTextOffsetX.setValue(PHASE_OFFSET_MIN);
+                Tween.to(phaseTextOffsetX, -1, 1f)
+                     .target(0)
+                     .ease(Quint.OUT)
+                     .start(June15GAM.tween);
                 // TODO: maybe do some other things here?
             }
             phaseActive = false;
@@ -336,6 +406,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             spawnShips();
             phase = Gameplay.ATTACK;
             phaseTimer = attackTimer;
+            phaseTextOffsetX.setValue(PHASE_OFFSET_MIN);
+            Tween.to(phaseTextOffsetX, -1, 1f)
+                 .target(0)
+                 .ease(Quint.OUT)
+                 .start(June15GAM.tween);
             phaseActive = false;
             phaseEntryTimer = phaseEntryDelayTime;
             clearCannonballs();
@@ -372,6 +447,11 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             tileMap.setInternal();
             phase = Gameplay.BUILD;
             phaseTimer = buildTimer;
+            phaseTextOffsetX.setValue(PHASE_OFFSET_MIN);
+            Tween.to(phaseTextOffsetX, -1, 1f)
+                 .target(0)
+                 .ease(Quint.OUT)
+                 .start(June15GAM.tween);
             phaseActive = false;
             phaseEntryTimer = phaseEntryDelayTime;
             turn++;
