@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.lando.systems.June15GAM.buildings.Keep;
+import com.lando.systems.June15GAM.effects.DecalCrater;
 import com.lando.systems.June15GAM.effects.ExplosionGround;
 import com.lando.systems.June15GAM.effects.ExplosionWater;
 import com.lando.systems.June15GAM.weapons.Cannonball;
@@ -39,6 +40,7 @@ public class Assets {
     public static Animation explosionGroundAnim;
     public static Animation cannonballAnim;
     public static Animation keepAnim;
+    public static Animation decalCraterAnim;
 
     public static void load() {
         font = new BitmapFont(Gdx.files.internal("fonts/zorque.fnt"));
@@ -105,6 +107,13 @@ public class Assets {
                 spritesheetRegions[3][2],
                 spritesheetRegions[3][3]);
         keepAnim.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+        decalCraterAnim = new Animation(
+                DecalCrater.frameDuration,
+                spritesheetRegions[1][2],
+                spritesheetRegions[1][3],
+                spritesheetRegions[1][4]);
+        decalCraterAnim.setPlayMode(Animation.PlayMode.LOOP);
     }
 
     public static void dispose() {

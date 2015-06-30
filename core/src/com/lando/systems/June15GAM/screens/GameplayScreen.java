@@ -458,6 +458,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             tileMap.tetris = new WallPiece(tileMap);
             clearCannonballs();
             resetCannons();
+            effectsManager.clearDecals();
         }
     }
 
@@ -524,6 +525,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                                  Effect.Type effectType) {
         tileMap.destroyBuildingAt(tileHitX, tileHitY);
         if (hitTileType != TileType.WATER) {
+            effectsManager.newEffect(Effect.Type.DECAL_CRATER, cannonball.target.x, cannonball.target.y);
             tileMap.tiles[tileHitY][tileHitX].type = TileType.GROUND;
             tileMap.tiles[tileHitY][tileHitX].texture = TileTexture.GROUND_GRASS;
         }
@@ -593,7 +595,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     }
 
     private void tapBuild(){
-
+        // TODO: remove craters if building a wall over one
         if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
             tileMap.tetris.place(tileMap);
             shake.shake(SHAKE_AMOUNT_PLACE_WALL);
@@ -609,6 +611,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     }
 
     private void tapCannon(){
+        // TODO: remove craters if building a wall over one
         if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
             tileMap.tetris.place(tileMap);
             shake.shake(SHAKE_AMOUNT_PLACE_WALL);

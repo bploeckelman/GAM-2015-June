@@ -14,7 +14,8 @@ public class Effect implements Pool.Poolable {
 
     public enum Type {
         EXPLOSION_WATER,
-        EXPLOSION_GROUND
+        EXPLOSION_GROUND,
+        DECAL_CRATER
         // ...
     }
 

@@ -2,6 +2,7 @@ package com.lando.systems.June15GAM.effects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
@@ -13,16 +14,20 @@ public class EffectsManager {
 
     Pool<ExplosionWater> explosionWaterPool;
     Pool<ExplosionGround> explosionGroundPool;
+    Pool<DecalCrater>     decalCraterPool;
 
     Array<ExplosionWater>  explosionsWater;
     Array<ExplosionGround> explosionsGround;
+    Array<DecalCrater>     decalCraters;
 
     public EffectsManager() {
         explosionWaterPool = Pools.get(ExplosionWater.class);
         explosionGroundPool = Pools.get(ExplosionGround.class);
+        decalCraterPool = Pools.get(DecalCrater.class);
 
         explosionsWater  = new Array<ExplosionWater>();
         explosionsGround = new Array<ExplosionGround>();
+        decalCraters = new Array<DecalCrater>();
     }
 
     public void newEffect(Effect.Type type, float x, float y) {
@@ -37,6 +42,12 @@ public class EffectsManager {
                 ExplosionGround explosion = explosionGroundPool.obtain();
                 explosion.init(x, y);
                 explosionsGround.add(explosion);
+                break;
+            }
+            case DECAL_CRATER: {
+                DecalCrater decal = decalCraterPool.obtain();
+                decal.init(x, y);
+                decalCraters.add(decal);
                 break;
             }
             default:
@@ -61,15 +72,33 @@ public class EffectsManager {
                 explosionsGround.removeIndex(i);
             }
         }
+        for (int i = decalCraters.size - 1; i >= 0; --i) {
+            final DecalCrater decal = decalCraters.get(i);
+            decal.update(delta);
+            if (!decal.isAlive()) {
+                decalCraterPool.free(decal);
+                decalCraters.removeIndex(i);
+            }
+        }
     }
 
     public void render(SpriteBatch batch) {
+        for (DecalCrater decal : decalCraters) {
+            decal.render(batch);
+        }
         for (ExplosionWater explosion : explosionsWater) {
             explosion.render(batch);
         }
         for (ExplosionGround explosion : explosionsGround) {
             explosion.render(batch);
         }
+    }
+
+    public void clearDecals() {
+        for (DecalCrater decal : decalCraters) {
+            decalCraterPool.free(decal);
+        }
+        decalCraters.clear();
     }
 
 }
