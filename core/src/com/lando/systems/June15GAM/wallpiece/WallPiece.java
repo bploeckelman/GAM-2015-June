@@ -136,12 +136,14 @@ public class WallPiece extends MoveableObject{
     }
 
     private void createNewPiece(){
-        switch (MathUtils.random(4)){
+        switch (MathUtils.random(6)){
             case 0: makeFourLine(); break;
             case 1: makeTwoLine(); break;
             case 2: makeT(); break;
             case 3: makeS(); break;
             case 4: makeZ(); break;
+            case 5: makePlus(); break;
+            case 6: makeSquare(); break;
         }
         calculateSize();
     }
@@ -186,6 +188,23 @@ public class WallPiece extends MoveableObject{
         pieceMap[3][1] = true;
         pieceMap[3][0] = true;
         pieceMap[0][2] = true;
+    }
+
+    private void makePlus(){
+        pieceMap = new boolean[4][4];
+        pieceMap[0][1] = true;
+        pieceMap[1][1] = true;
+        pieceMap[2][1] = true;
+        pieceMap[1][0] = true;
+        pieceMap[1][2] = true;
+    }
+
+    private void makeSquare(){
+        pieceMap = new boolean[4][4];
+        pieceMap[1][1] = true;
+        pieceMap[2][1] = true;
+        pieceMap[1][2] = true;
+        pieceMap[2][2] = true;
     }
 
     /*
