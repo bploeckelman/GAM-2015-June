@@ -303,6 +303,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             game.exit();
         }
         noActionTimer -= delta;
+        tileMap.update(delta);
 
         if (phaseActive){
             phaseTimer -= delta;
@@ -548,7 +549,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         final float tile_size = tileMap.tileSet.tileSize;
         for (int i = 0; i < numShips; ++i) {
             int tx = MathUtils.random(1, tileMap.tiles[0].length - 2);
-            int ty = tileMap.tiles.length - 1;
+            int ty = 0;
             float w = tile_size * 1.5f;
             float h = tile_size * 1.5f;
             Ship ship = new Ship(tileMap, tx * tile_size, ty * tile_size, w, h, turn + 1);

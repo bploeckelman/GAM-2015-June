@@ -49,7 +49,7 @@ public class TileMap {
                 double noise2 = SimplexNoise.noise((mapSeed +x)/5.0, y/5.0) * .3f;
                 double noise3 = SimplexNoise.noise((mapSeed +x)*1, y*1) * .2f;
                 double noise = noise1 + noise2 + noise3;
-                float weight = 2.5f * (MathUtils.clamp(((height - y) - 2)/(float)((height+2)/2),0 , 1) - .5f);
+                float weight = 2.5f * (MathUtils.clamp((y - 2)/(float)((height+2)/2),0 , 1) - .5f);
                 if (noise + weight < 0) {
                     tiles[y][x] = new Tile(TileType.WATER, TileTexture.GROUND_WATER, x, y);
                 } else if (noise + weight < .4f){
@@ -66,7 +66,7 @@ public class TileMap {
         final int mid = width / 2;
         final int left = mid / 3;
         final int right = width - left;
-        final int ypos = 4;
+        final int ypos = 11;
 
         makeStarterCastle(mid, ypos);
         Keep leftKeep = new Keep(left, ypos);
@@ -81,6 +81,10 @@ public class TileMap {
         tetris = new CannonPlacer(this);
     }
 
+
+    public void update(float dt){
+        tetris.update(dt);
+    }
 
     // TODO: move me
     Vector2 mouseDir = new Vector2();

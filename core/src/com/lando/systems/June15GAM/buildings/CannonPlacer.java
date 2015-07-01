@@ -15,10 +15,12 @@ public class CannonPlacer extends MoveableObject {
 
     private int numberToPlace = 0;
 
+
     public CannonPlacer(TileMap world){
         super(world);
         int internalTiles = world.numberOfInternalTiles();
         numberToPlace = 1 + (int)MathUtils.log(4, internalTiles);
+
     }
 
     public boolean isValidPlacement(TileMap tileMap) {
@@ -27,12 +29,14 @@ public class CannonPlacer extends MoveableObject {
         return true;
     }
 
+
     GlyphLayout layout         = new GlyphLayout();
     Color       placementColor = new Color();
 
     public void render(TileMap map, SpriteBatch batch) {
-        if (isValidPlacement(map)) placementColor.set(0, 1, 0, .7f);
-        else                       placementColor.set(1, 0, 0, .5f);
+        float alpha = (float)Math.abs(Math.sin(animationTimer * 3f));
+        if (isValidPlacement(map)) placementColor.set(0, 1, 0, .7f * alpha);
+        else                       placementColor.set(1, 0, 0, .5f * alpha);
 
         batch.setColor(placementColor);
         batch.draw(Assets.spritesheetRegions[1][0],
@@ -50,7 +54,7 @@ public class CannonPlacer extends MoveableObject {
         Assets.font.getData().setScale(SCALE_LINE_1);
         layout.setText(Assets.font, line1);
         final float line1x = ((map.width * map.tileSet.tileSize) - layout.width) / 2f;
-        final float line1y = (map.height * map.tileSet.tileSize) - layout.height - 10f;
+        final float line1y = (map.height * map.tileSet.tileSize) - layout.height - 300f;
         Assets.font.setColor(Color.BLACK);
         Assets.font.draw(batch, line1, line1x + 2f, line1y + 2f);
         Assets.font.setColor(Color.YELLOW);

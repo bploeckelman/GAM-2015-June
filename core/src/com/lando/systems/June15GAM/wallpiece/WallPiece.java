@@ -55,8 +55,9 @@ public class WallPiece extends MoveableObject{
     }
 
     public void render(TileMap map, SpriteBatch batch){
+        float alpha = (float)Math.abs(Math.sin(animationTimer * 3f));
         if (isValidPlacement(map)) batch.setColor(1,1,1,.7f);
-        else batch.setColor(1,0,0,.5f);
+        else batch.setColor(1,0,0,.5f * alpha);
         for (int row = 0; row < pieceMap.length; row++){
             for (int col = 0; col < pieceMap[0].length; col++){
                 if (pieceMap[row][col]){
