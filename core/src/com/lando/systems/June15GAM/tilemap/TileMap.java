@@ -176,10 +176,10 @@ public class TileMap {
         boolean didDestroy = false;
         Building building = buildings.get(x + y * width);
         if (building != null) {
+            didDestroy = true;
             buildings.put(x + y * width, null);
             if (building instanceof Tower) {
                 towers.remove(building);
-                didDestroy = true;
             }
         }
         reconcileWalls();

@@ -166,6 +166,7 @@ public class Ship {
         }
 
 
+        Assets.cannonShipSound.play();
         Cannonball cannonball = cannonballPool.obtain();
         cannonball.init(position.x + half_tile_size / 2f,
                         position.y + half_tile_size / 2f,

@@ -1,6 +1,7 @@
 package com.lando.systems.June15GAM;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -41,6 +42,14 @@ public class Assets {
     public static Animation cannonballAnim;
     public static Animation keepAnim;
     public static Animation decalCraterAnim;
+
+    public static Sound cannonShipSound;
+    public static Sound cannonTowerSound;
+    public static Sound shipDeathSound;
+    public static Sound wallHitSound;
+    public static Sound wallPlaceSound;
+    public static Sound cannonPlaceSound;
+    public static Sound countdownSound;
 
     public static void load() {
         font = new BitmapFont(Gdx.files.internal("fonts/zorque.fnt"));
@@ -114,9 +123,23 @@ public class Assets {
                 spritesheetRegions[1][3],
                 spritesheetRegions[1][4]);
         decalCraterAnim.setPlayMode(Animation.PlayMode.LOOP);
+
+        cannonShipSound  = Gdx.audio.newSound(Gdx.files.internal("sounds/cannon-ship.mp3"));
+        cannonTowerSound = Gdx.audio.newSound(Gdx.files.internal("sounds/cannon-tower.mp3"));
+        shipDeathSound   = Gdx.audio.newSound(Gdx.files.internal("sounds/ship-death.mp3"));
+        wallHitSound     = Gdx.audio.newSound(Gdx.files.internal("sounds/wall-hit.mp3"));
+        wallPlaceSound   = Gdx.audio.newSound(Gdx.files.internal("sounds/wall-place.mp3"));
+        cannonPlaceSound = Gdx.audio.newSound(Gdx.files.internal("sounds/cannon-place.mp3"));
+        countdownSound   = Gdx.audio.newSound(Gdx.files.internal("sounds/countdown.mp3"));
     }
 
     public static void dispose() {
+        cannonShipSound.dispose();
+        cannonTowerSound.dispose();
+        shipDeathSound.dispose();
+        wallHitSound.dispose();
+        wallPlaceSound.dispose();
+        countdownSound.dispose();
         font.dispose();
         menuBackgroundShader.dispose();
         effectsTexture.dispose();

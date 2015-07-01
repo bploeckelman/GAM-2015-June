@@ -1,6 +1,8 @@
 package com.lando.systems.June15GAM.screens;
 
+import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Quint;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
@@ -39,6 +41,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
     private static final float SHAKE_AMOUNT_GROUND_HIT     = 0.2f;
     private static final float SHAKE_AMOUNT_PLAYER_FIRES   = 0.15f;
     private static final float SHAKE_AMOUNT_PLACE_WALL     = 0.2f;
+    private static final float SHAKE_AMOUNT_PLACE_CANNON   = 0.3f;
 
     private static final float FONT_SCALE_DEFAULT  = 1f;
     private static final float FONT_SCALE_TIMER    = 0.9f;
@@ -298,6 +301,10 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         batch.end();
     }
 
+    boolean      playCountdown = false;
+    boolean      justPlayedCountdown = false;
+    MutableFloat dummy         = new MutableFloat(0f);
+
     public void update(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.exit();
@@ -305,8 +312,20 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         noActionTimer -= delta;
         tileMap.update(delta);
 
-        if (phaseActive){
+        if (phaseActive) {
             phaseTimer -= delta;
+            if (!playCountdown && phaseTimer > 0f && phaseTimer <= 3.1f && !justPlayedCountdown) {
+                playCountdown = true;
+                justPlayedCountdown = true;
+                Assets.countdownSound.play();
+                // setTimeout(...)
+                Tween.to(dummy, -1, 3f).target(0f).setCallback(new TweenCallback() {
+                    @Override
+                    public void onEvent(int i, BaseTween<?> baseTween) {
+                        playCountdown = false;
+                    }
+                }).start(June15GAM.tween);
+            }
             switch (phase) {
                 case BUILD:  updateBuildPhase(delta);  break;
                 case CANNON: updateCannonPhase(delta); break;
@@ -318,6 +337,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 if (phaseEntryTimer <= 0) {
                     phaseActive = true;
                     noActionTimer = .2f;
+                    justPlayedCountdown = false;
                 }
                 if (phase == Gameplay.GAMEOVER) {
                     dispose();
@@ -502,6 +522,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                         // TODO: moar kaboom
                         ships.removeIndex(s);
                         score += ship.score;
+                        Assets.shipDeathSound.play();
                         effectsManager.newEffect(effectType, cannonball.position.x, cannonball.position.y);
                         shake.shake(SHAKE_AMOUNT_SHIP_DESTROYED);
                     }
@@ -524,7 +545,9 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                                  int tileHitY,
                                  TileType hitTileType,
                                  Effect.Type effectType) {
-        tileMap.destroyBuildingAt(tileHitX, tileHitY);
+        if (tileMap.destroyBuildingAt(tileHitX, tileHitY)) {
+            Assets.wallHitSound.play();
+        }
         if (hitTileType != TileType.WATER) {
             effectsManager.newEffect(Effect.Type.DECAL_CRATER, cannonball.target.x, cannonball.target.y);
             tileMap.tiles[tileHitY][tileHitX].type = TileType.GROUND;
@@ -597,32 +620,40 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     private void tapBuild(){
         // TODO: remove craters if building a wall over one
-        if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
-            tileMap.tetris.place(tileMap);
-            shake.shake(SHAKE_AMOUNT_PLACE_WALL);
+        if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)) {
+            if (tileMap.tetris.place(tileMap)) {
+                Assets.wallPlaceSound.play();
+                shake.shake(SHAKE_AMOUNT_PLACE_WALL);
+            }
             return;
         }
-        if (rotateButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
+        if (rotateButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)) {
             tileMap.tetris.rotate(WallPiece.R.C);
             shake.shake(SHAKE_AMOUNT_PLACE_WALL);
             return;
         }
-        tileMap.tetris.place(tileMap);
-        shake.shake(SHAKE_AMOUNT_PLACE_WALL);
+        if (tileMap.tetris.place(tileMap)) {
+            Assets.wallPlaceSound.play();
+            shake.shake(SHAKE_AMOUNT_PLACE_WALL);
+        }
     }
 
-    private void tapCannon(){
+    private void tapCannon() {
         // TODO: remove craters if building a wall over one
-        if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)){
-            tileMap.tetris.place(tileMap);
-            shake.shake(SHAKE_AMOUNT_PLACE_WALL);
+        if (placeButtonRect.contains(mouseWorldPos.x, mouseWorldPos.y)) {
+            if (tileMap.tetris.place(tileMap)) {
+                Assets.cannonPlaceSound.play();
+                shake.shake(SHAKE_AMOUNT_PLACE_CANNON);
+            }
             return;
         }
-        tileMap.tetris.place(tileMap);
-        shake.shake(SHAKE_AMOUNT_PLACE_WALL);
+        if (tileMap.tetris.place(tileMap)) {
+            Assets.cannonPlaceSound.play();
+            shake.shake(SHAKE_AMOUNT_PLACE_CANNON);
+        }
     }
 
-    private void tapAttack(){
+    private void tapAttack() {
         // Disable attacking if phase is over
         if (phaseTimer <= 0f) {
             return;
@@ -638,6 +669,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                 tileMap.getTowers().remove(tower);
                 tileMap.getTowers().addLast(tower);
 
+                Assets.cannonTowerSound.play();
                 Cannonball cannonball = cannonballPool.obtain();
                 cannonball.init(tower.x * tile_size + half_tile_size / 2f,
                                 tower.y * tile_size + half_tile_size / 2f,
