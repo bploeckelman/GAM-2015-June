@@ -50,6 +50,8 @@ public class Assets {
     public static Sound wallPlaceSound;
     public static Sound cannonPlaceSound;
     public static Sound countdownSound;
+    public static Sound cannonballSplashSound;
+    public static Sound touchClickSound;
 
     public static void load() {
         font = new BitmapFont(Gdx.files.internal("fonts/zorque.fnt"));
@@ -131,6 +133,8 @@ public class Assets {
         wallPlaceSound   = Gdx.audio.newSound(Gdx.files.internal("sounds/wall-place.mp3"));
         cannonPlaceSound = Gdx.audio.newSound(Gdx.files.internal("sounds/cannon-place.mp3"));
         countdownSound   = Gdx.audio.newSound(Gdx.files.internal("sounds/countdown.mp3"));
+        cannonballSplashSound = Gdx.audio.newSound(Gdx.files.internal("sounds/cannonball-splash.mp3"));
+        touchClickSound  = Gdx.audio.newSound(Gdx.files.internal("sounds/click.mp3"));
     }
 
     public static void dispose() {
@@ -140,6 +144,8 @@ public class Assets {
         wallHitSound.dispose();
         wallPlaceSound.dispose();
         countdownSound.dispose();
+        cannonballSplashSound.dispose();
+        touchClickSound.dispose();
         font.dispose();
         menuBackgroundShader.dispose();
         effectsTexture.dispose();

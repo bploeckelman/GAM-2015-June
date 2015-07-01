@@ -338,6 +338,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
                     phaseActive = true;
                     noActionTimer = .2f;
                     justPlayedCountdown = false;
+                    Assets.touchClickSound.play();
                 }
                 if (phase == Gameplay.GAMEOVER) {
                     dispose();
@@ -552,6 +553,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
             effectsManager.newEffect(Effect.Type.DECAL_CRATER, cannonball.target.x, cannonball.target.y);
             tileMap.tiles[tileHitY][tileHitX].type = TileType.GROUND;
             tileMap.tiles[tileHitY][tileHitX].texture = TileTexture.GROUND_GRASS;
+        } else {
+            Assets.cannonballSplashSound.play();
         }
         effectsManager.newEffect(effectType, cannonball.target.x, cannonball.target.y);
         // TODO: different shake when a wall is hit
