@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Pool;
 /**
  * Brian Ploeckelman created on 6/4/2015.
  */
-public class Effect implements Pool.Poolable {
+public class Effect {
 
     public enum Type {
         EXPLOSION_WATER,
@@ -37,13 +37,6 @@ public class Effect implements Pool.Poolable {
     public void init(float x, float y) {
         position.set(x, y);
         alive = true;
-        stateTime = 0;
-    }
-
-    @Override
-    public void reset() {
-        position.set(0, 0);
-        alive = false;
         stateTime = 0;
     }
 

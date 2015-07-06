@@ -115,7 +115,7 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         mouseScreenPos = new Vector3();
         mouseWorldPos = new Vector3();
         sceneFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, June15GAM.win_width, June15GAM.win_height, false);
-        batch = new SpriteBatch();
+        batch = Assets.batch;
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
         sceneRegion.flip(false, true);
         camera = new OrthographicCamera(June15GAM.win_width, June15GAM.win_height);
@@ -222,10 +222,8 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(sceneRegion, 0, 0, camera.viewportWidth, camera.viewportHeight);
-        batch.end();
 
         // UI stuff
-        batch.begin();
         if (phase != Gameplay.ATTACK) {
             batch.draw(Assets.spritesheetRegions[2][0], placeButtonRect.x, placeButtonRect.y, placeButtonRect.width, placeButtonRect.height);
             tileMap.tetris.render(tileMap, batch);
@@ -411,7 +409,6 @@ public class GameplayScreen extends ScreenAdapter implements GestureDetector.Ges
 
     @Override
     public void dispose() {
-        batch.dispose();
         sceneFrameBuffer.dispose();
     }
 

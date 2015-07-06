@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -20,6 +21,7 @@ import com.lando.systems.June15GAM.weapons.Cannonball;
  */
 public class Assets {
 
+    public static SpriteBatch batch;
     public static BitmapFont font;
 
     public static Texture weaponsTexture;
@@ -54,6 +56,8 @@ public class Assets {
     public static Sound touchClickSound;
 
     public static void load() {
+        batch = new SpriteBatch();
+
         font = new BitmapFont(Gdx.files.internal("fonts/zorque.fnt"));
         font.getData().markupEnabled = true;
 
@@ -153,6 +157,7 @@ public class Assets {
         vehiclesTexture.dispose();
         placeButtonTexture.dispose();
         spritesheetTexture.dispose();
+        batch.dispose();
     }
 
     private static ShaderProgram compileShaderProgram(FileHandle vertSource, FileHandle fragSource) {

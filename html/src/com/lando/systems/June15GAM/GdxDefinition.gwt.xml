@@ -9,4 +9,6 @@
     <entry-point class='com.lando.systems.June15GAM.client.HtmlLauncher' />
 
     <set-configuration-property name="gdx.assetpath" value="../android/assets" />
+    <extend-configuration-property name="gdx.reflect.include" value="com.lando.systems.June15GAM.effects" />
+    <extend-configuration-property name="gdx.reflect.include" value="com.lando.systems.June15GAM.weapons" />
 </module>

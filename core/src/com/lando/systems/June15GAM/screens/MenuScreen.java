@@ -45,7 +45,7 @@ public class MenuScreen extends ScreenAdapter {
         this.camera = new OrthographicCamera(June15GAM.win_width, June15GAM.win_height);
         this.camera.translate(June15GAM.win_width / 2f, June15GAM.win_height / 2f);
         this.camera.update();
-        this.batch = new SpriteBatch();
+        this.batch = Assets.batch;
         this.font = new BitmapFont(Gdx.files.internal("fonts/2lines.fnt"));
         this.line1 = "Bulwark!";
         this.line2 = "touch to play...";
@@ -116,7 +116,6 @@ public class MenuScreen extends ScreenAdapter {
 
     public void dispose() {
         font.dispose();
-        batch.dispose();
     }
 
     private void startRepeatingTweens() {

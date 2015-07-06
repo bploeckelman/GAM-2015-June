@@ -12,4 +12,6 @@
     <add-linker name="xsiframe"/>
     <set-configuration-property name="devModeRedirectEnabled" value="true"/>
     <set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
+    <extend-configuration-property name="gdx.reflect.include" value="com.lando.systems.June15GAM.effects" />
+    <extend-configuration-property name="gdx.reflect.include" value="com.lando.systems.June15GAM.weapons" />
 </module>
