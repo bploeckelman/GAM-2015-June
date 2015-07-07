@@ -167,7 +167,7 @@ public class Assets {
             throw new GdxRuntimeException("Failed to compile shader program:\n" + shader.getLog());
         }
         else if (shader.getLog().length() > 0) {
-            Gdx.app.error("SHADER", "ShaderProgram compilation log:\n" + shader.getLog());
+            Gdx.app.debug("SHADER", "ShaderProgram compilation log:\n" + shader.getLog());
         }
         return shader;
     }
